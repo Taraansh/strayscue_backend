@@ -20,7 +20,7 @@ class Sponsor(models.Model):
     sponsor_amount = models.DecimalField(max_digits=10, decimal_places=2, null=False)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
-    sponsor_logo = models.ImageField(upload_to='sponsor_logos/', null=True)
+    sponsor_logo = models.ImageField(upload_to='sponsor_logos/', null=True, blank=True)
     sponsor_logo_url = models.URLField(blank=True, default='')
 
     def __str__(self):
