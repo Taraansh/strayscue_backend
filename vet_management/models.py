@@ -7,9 +7,9 @@ from django.conf import settings
 class Vet(models.Model):
     vet_name = models.CharField(max_length=255, null=False)
     registration_id = models.CharField(max_length=255, null=False)
-    vet_certification = models.ImageField(upload_to='vet_certifications/', null=True)
+    vet_certification = models.ImageField(upload_to='vet_certifications/', null=True, blank=True)
     vet_certification_url = models.URLField(blank=True, default='')
-    verification_id = models.ImageField(upload_to='verification_ids/', null=True)
+    verification_id = models.ImageField(upload_to='verification_ids/', null=True, blank=True)
     verification_id_url = models.URLField(blank=True, default='')
 
     def __str__(self):
@@ -22,4 +22,7 @@ def update_image_urls(sender, instance, created, **kwargs):
         instance.vet_certification_url = f"{settings.MEDIA_URL}{instance.vet_certification}"
     if created and instance.verification_id:
         instance.verification_id_url = f"{settings.MEDIA_URL}{instance.verification_id}"
-    instance.save()
+    Vet.objects.filter(id=instance.id).update(
+        vet_certification_url=instance.vet_certification_url,
+        verification_id_url=instance.verification_id_url
+    )
