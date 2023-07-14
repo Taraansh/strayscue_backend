@@ -38,3 +38,28 @@ def search_sponsor(request, sponsor_name):
     sponsors = Sponsor.objects.filter(sponsor_name__icontains=sponsor_name)
     serializer = SponsorSerializer(sponsors, many=True)
     return Response(serializer.data)
+
+
+@api_view(['PUT'])
+def update_sponsor(request, id):
+    try:
+        sponsor = Sponsor.objects.get(pk=id)
+    except Sponsor.DoesNotExist:
+        return Response({'status': 'error', 'message': 'Sponsor not found'}, status=404)
+
+    serializer = SponsorSerializer(sponsor, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'status': 'success'})
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['DELETE'])
+def delete_sponsor(request, id):
+    try:
+        sponsor = Sponsor.objects.get(pk=id)
+    except Sponsor.DoesNotExist:
+        return Response({'status': 'error', 'message': 'Sponsor not found'}, status=404)
+
+    sponsor.delete()
+    return Response({'status': 'success'})
