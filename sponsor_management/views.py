@@ -43,7 +43,7 @@ def search_sponsor(request, sponsor_name):
 @api_view(['PUT'])
 def update_sponsor(request, id):
     try:
-        sponsor = Sponsor.objects.get(pk=id)
+        sponsor = Sponsor.objects.get(id=id)
     except Sponsor.DoesNotExist:
         return Response({'status': 'error', 'message': 'Sponsor not found'}, status=404)
 
@@ -57,7 +57,7 @@ def update_sponsor(request, id):
 @api_view(['DELETE'])
 def delete_sponsor(request, id):
     try:
-        sponsor = Sponsor.objects.get(pk=id)
+        sponsor = Sponsor.objects.get(id=id)
     except Sponsor.DoesNotExist:
         return Response({'status': 'error', 'message': 'Sponsor not found'}, status=404)
 
