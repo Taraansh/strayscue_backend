@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
+from authorization.models import Profile
 
 
 class Vet(models.Model):
@@ -11,6 +12,7 @@ class Vet(models.Model):
     vet_certification_url = models.URLField(blank=True, default='')
     verification_id = models.ImageField(upload_to='verification_ids/', null=True, blank=True)
     verification_id_url = models.URLField(blank=True, default='')
+    vet_profile_creator = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='vets', null=True, blank=True)
 
     def __str__(self):
         return self.vet_name
