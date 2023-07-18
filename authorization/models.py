@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import make_password
 
 
 class ProfileManager(BaseUserManager):
-    def create_user(self, user_name, user_contact, email, password=None, **extra_fields):
+    def create_user(self, username, user_contact, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
 
@@ -12,7 +12,7 @@ class ProfileManager(BaseUserManager):
             raise ValueError('The Email field must be set')
         hashed_pwd = make_password(password, salt=None)
         user = self.model(
-            user_name=user_name,
+            username=username,
             user_contact=user_contact,
             password=hashed_pwd,
             email=self.normalize_email(email),
@@ -21,14 +21,14 @@ class ProfileManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, user_name, user_contact, email, password=None, **extra_fields):
+    def create_superuser(self, username, user_contact, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
         if not email:
             raise ValueError('The Email field must be set')
         user = self.create_user(
-            user_name=user_name,
+            username=username,
             user_contact=user_contact,
             email=email,
             password=password,
@@ -40,8 +40,8 @@ class ProfileManager(BaseUserManager):
 
 class Profile(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True)
-    user_name = models.CharField(max_length=50)
-    user_contact = models.CharField(max_length=20)
+    username = models.CharField(max_length=50, unique=True)
+    user_contact = models.CharField(max_length=20, unique=True)
     email = models.CharField(max_length=50, unique=True, default='')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -61,7 +61,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     )
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['user_name', 'user_contact']
+    REQUIRED_FIELDS = ['username', 'user_contact']
 
     objects = ProfileManager()
 

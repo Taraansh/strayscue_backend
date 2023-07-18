@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ["id", "user_name", "user_contact", "email", "password"]
+        fields = ["id", "username", "user_contact", "email", "password"]
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -27,6 +27,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['username'] = user.user_name
+        token['username'] = user.username
         token['email'] = user.email
         return token
