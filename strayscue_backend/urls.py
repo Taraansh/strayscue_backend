@@ -23,6 +23,8 @@ urlpatterns = [
     path('authorize/', include('authorization.urls')),
     path('sponsers/', include('sponsor_management.urls')),
     path('vets/', include('vet_management.urls')),
+    path('reporter/', include('reporter_management.urls')),
+    path('cases/', include('case_management.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

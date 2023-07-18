@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'sponsor_management',
     'vet_management',
+    'reporter_management',
+    'case_management',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'django.contrib.admin',
