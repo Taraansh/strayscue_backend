@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.contrib.auth.hashers import make_password
@@ -65,5 +66,41 @@ class Profile(AbstractBaseUser, PermissionsMixin):
 
     objects = ProfileManager()
 
+    # def __str__(self):
+    #     return f"id: {self.id} last_login: {self.last_login}, is_superuser: {self.is_superuser}, username: {self.username}, user_contact: {self.user_contact}, email: {self.email}, is_active: {self.is_active}, is_staff: {self.is_staff}"
+
+    # def __str__(self):
+    #     profile_data = {
+    #         "id": self.id,
+    #         "last_login": self.last_login,
+    #         "is_superuser": self.is_superuser,
+    #         "username": self.username,
+    #         "user_contact": self.user_contact,
+    #         "email": self.email,
+    #         "is_active": self.is_active,
+    #         "is_staff": self.is_staff,
+    #         "groups": list(self.groups.values_list('name', flat=True)),
+    #         "user_permissions": list(self.user_permissions.values_list('name', flat=True)),
+    #     }
+    #     return json.dumps(profile_data, indent=2)
+
+    # def __str__(self):
+    #     return str(self.to_dict())
+
+    # def to_dict(self):
+    #     return {
+    #         "id": self.id,
+    #         "last_login": self.last_login,
+    #         "is_superuser": self.is_superuser,
+    #         "username": self.username,
+    #         "user_contact": self.user_contact,
+    #         "email": self.email,
+    #         "is_active": self.is_active,
+    #         "is_staff": self.is_staff,
+    #         "groups": self.groups.all().values_list('name', flat=True),  # Returns a list of group names
+    #         "user_permissions": self.user_permissions.all().values_list('name', flat=True),  # Returns a list of permission names
+    #     }
+
     def __str__(self):
-        return self.email
+        return self.username
+    

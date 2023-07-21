@@ -36,13 +36,13 @@ class Case(models.Model):
     mortality_of_case = models.CharField(max_length=255, choices=MORTALITY_OF_CASE, null=True)
     cause_of_failure = models.TextField(null=True, blank=True)
     case_id = models.AutoField(primary_key=True)
-    user_adding_this_case = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='cases')
+    user_adding_this_case = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Case - ID: {self.case_id} - {self.type_of_case}"
 
 class ReportingDetail(models.Model):
-    case_linked = models.ForeignKey(Case, on_delete=models.CASCADE)
+    case_linked = models.OneToOneField(Case, on_delete=models.CASCADE)
     reporterName = models.CharField(max_length=255, null=False)
     reporterContact = models.CharField(max_length=255, null=False)
     reporterAltContact = models.CharField(max_length=255, blank=True, null=True)
@@ -101,7 +101,7 @@ class AnimalDetail(models.Model):
         ('No', 'No'),
     ]
 
-    case_linked = models.ForeignKey(Case, on_delete=models.CASCADE)
+    case_linked = models.OneToOneField(Case, on_delete=models.CASCADE)
     animalSpecies = models.CharField(max_length=255, choices=ANIMAL_SPECIES_CHOICES, null=True, blank=True)
     animalBreed = models.CharField(max_length=255, choices=ANIMAL_BREED_CHOICES, null=True, blank=True)
     animalAge = models.CharField(max_length=255, choices=ANIMAL_AGE_CHOICES, null=True, blank=True)
@@ -133,7 +133,7 @@ class MedicalDetail(models.Model):
         ('Unsure', 'Unsure'),
     )
 
-    case_linked = models.ForeignKey(Case, on_delete=models.CASCADE)
+    case_linked = models.OneToOneField(Case, on_delete=models.CASCADE)
     medicalHistory = models.CharField(max_length=255, null=True, blank=True)
     vaccinationStatus = models.CharField(max_length=20, choices=MEDICAL_STATUS_CHOICES, null=True, blank=True)
     dewormed = models.CharField(max_length=20, choices=MEDICAL_STATUS_CHOICES, null=True, blank=True)
@@ -145,7 +145,7 @@ class MedicalDetail(models.Model):
 
 
     def __str__(self):
-        return f"{self.vaccinationStatus} - {self.case_id}" 
+        return f"{self.vaccinationStatus} - {self.case_linked}" 
 
 
 class OperationDetail(models.Model):
@@ -155,7 +155,7 @@ class OperationDetail(models.Model):
         ('Complicated', 'Complicated'),
     ]
     
-    case_linked = models.ForeignKey(Case, on_delete=models.CASCADE)
+    case_linked = models.OneToOneField(Case, on_delete=models.CASCADE)
     vetName = models.CharField(max_length=255, null=True, blank=True)
     operationDate = models.DateField(null=True, blank=True)
     operationStartTime = models.TimeField(null=True, blank=True)
@@ -166,7 +166,7 @@ class OperationDetail(models.Model):
     organImage = models.ImageField(upload_to='operational_detail/organ_image/', null=True, blank=True)
 
     def __str__(self):
-        return f"OperationDetail - Case ID: {self.case_id}"
+        return f"OperationDetail - Case ID: {self.case_linked}"
     
 
 class PostOperationDetail(models.Model):
@@ -182,7 +182,7 @@ class PostOperationDetail(models.Model):
         ('No', 'No'),
     ]
 
-    case_linked = models.ForeignKey(Case, on_delete=models.CASCADE)
+    case_linked = models.OneToOneField(Case, on_delete=models.CASCADE)
     popComment = models.TextField(null=True, blank=True)
     popFacility = models.CharField(max_length=20, choices=POP_FACILITY_CHOICES, null=True, blank=True)
     popExpectedDays = models.CharField(max_length=255, null=True, blank=True)
@@ -195,5 +195,5 @@ class PostOperationDetail(models.Model):
     releasePictures = models.ImageField(upload_to='post_operation_detail/release_picture/', null=True, blank=True)
 
     def __str__(self):
-        return f"PostOperationDetail - ID: {self.id}"
+        return f"PostOperationDetail - ID: {self.case_linked}"
     

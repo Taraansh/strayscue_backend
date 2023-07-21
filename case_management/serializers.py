@@ -27,12 +27,21 @@ class PostOperationDetailSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class CaseSerializer(serializers.ModelSerializer):
-    reportingdetail_set = ReportingDetailSerializer(many=True, read_only=True)
-    animaldetail_set = AnimalDetailSerializer(many=True, read_only=True)
-    medicaldetail_set = MedicalDetailSerializer(many=True, read_only=True)
-    operationdetail_set = OperationDetailSerializer(many=True, read_only=True)
-    postoperationdetail_set = PostOperationDetailSerializer(many=True, read_only=True)
+    reportingdetail= ReportingDetailSerializer(read_only=True)
+    animaldetail = AnimalDetailSerializer(read_only=True)
+    medicaldetail = MedicalDetailSerializer(read_only=True)
+    operationdetail = OperationDetailSerializer(read_only=True)
+    postoperationdetail = PostOperationDetailSerializer(read_only=True)
+    user_name = serializers.SerializerMethodField()
+    # superuser = serializers.SerializerMethodField()
 
     class Meta:
         model = Case
-        fields = "__all__"
+        # fields = "__all__"
+        fields = ('type_of_case', 'status_of_case', 'mortality_of_case', 'cause_of_failure', 'case_id', 'user_adding_this_case', 'user_name', 'reportingdetail', 'animaldetail', 'medicaldetail', 'operationdetail', 'postoperationdetail')
+
+    def get_user_name(self, obj):
+        return f"{obj.user_adding_this_case}"
+    
+    # def get_superuser(self, obj):
+    #     return f"{obj.user_adding_this_case}"
