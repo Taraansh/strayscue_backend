@@ -251,14 +251,29 @@ def update_reporter(request, id):
     reporter.reportedTime = request.data.get("reportedTime", reporter.reportedTime)
     reporter.pickupDate = request.data.get("pickupDate", reporter.pickupDate)
     reporter.pickupTime = request.data.get("pickupTime", reporter.pickupTime)
-    reporter.frontImage = request.FILES.get("frontImage", reporter.frontImage)
-    reporter.backImage = request.FILES.get("backImage", reporter.backImage)
-    reporter.consentFormImage = request.FILES.get("consentFormImage", reporter.consentFormImage)
+    
+    front_image_file = request.FILES.get("frontImage")
+    if front_image_file is not None:
+        reporter.frontImage = front_image_file
+    elif "frontImage" in request.data and request.data["frontImage"] == "null":
+        reporter.frontImage = None
+    
+    back_image_file = request.FILES.get("backImage")
+    if back_image_file is not None:
+        reporter.backImage = back_image_file
+    elif "backImage" in request.data and request.data["backImage"] == "null":
+        reporter.backImage = None
+    
+    consent_form_image_file = request.FILES.get("consentFormImage")
+    if consent_form_image_file is not None:
+        reporter.consentFormImage = consent_form_image_file
+    elif "consentFormImage" in request.data and request.data["consentFormImage"] == "null":
+        reporter.consentFormImage = None
 
     reporter.save()
-    
     # Pass the existing case object to the serializer for response
     serializer = ReportingDetailSerializer(reporter)
+    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -281,7 +296,12 @@ def update_animal(request, id):
     animal.animalCatchable = request.data.get("animalCatchable", animal.animalCatchable)
     animal.animalWeight = request.data.get("animalWeight", animal.animalWeight)
     animal.admissionReason = request.data.get("admissionReason", animal.admissionReason)
-    animal.animalPictures = request.FILES.get("animalPictures", animal.animalPictures)
+
+    animal_pictures_file = request.FILES.get("animalPictures")
+    if animal_pictures_file is not None:
+        animal.animalPictures = animal_pictures_file
+    elif "animalPictures" in request.data and request.data["animalPictures"] == "null":
+        animal.animalPictures = None
 
     animal.save()
     
@@ -304,8 +324,18 @@ def update_medical(request, id):
     medical.fitForSurgery = request.data.get("fitForSurgery", medical.fitForSurgery)
     medical.otherDetails = request.data.get("otherDetails", medical.otherDetails)
     medical.admissionDate = request.data.get("admissionDate", medical.admissionDate)
-    medical.feedingRecordImage = request.FILES.get("feedingRecordImage", medical.feedingRecordImage)
-    medical.bloodReportImage = request.FILES.get("bloodReportImage", medical.bloodReportImage)
+
+    feeding_record_image_file = request.FILES.get("feedingRecordImage")
+    if feeding_record_image_file is not None:
+        medical.feedingRecordImage = feeding_record_image_file
+    elif "feedingRecordImage" in request.data and request.data["feedingRecordImage"] == "null":
+        medical.feedingRecordImage = None
+
+    blood_report_image_file = request.FILES.get("bloodReportImage")
+    if blood_report_image_file is not None:
+        medical.bloodReportImage = blood_report_image_file
+    elif "bloodReportImage" in request.data and request.data["bloodReportImage"] == "null":
+        medical.bloodReportImage = None
 
     medical.save()
     
@@ -327,9 +357,24 @@ def update_operation(request, id):
     operation.operationStartTime = request.data.get("operationStartTime", operation.operationStartTime)
     operation.operationEndTime = request.data.get("operationEndTime", operation.operationEndTime)
     operation.operationOutcome = request.data.get("operationOutcome", operation.operationOutcome)
-    operation.medicalPrescriptionImage = request.FILES.get("medicalPrescriptionImage", operation.medicalPrescriptionImage)
-    operation.treatmentRecordImage = request.FILES.get("treatmentRecordImage", operation.treatmentRecordImage)
-    operation.organImage = request.FILES.get("organImage", operation.organImage)
+
+    medical_prescription_image_file = request.FILES.get("medicalPrescriptionImage")
+    if medical_prescription_image_file is not None:
+        operation.medicalPrescriptionImage = medical_prescription_image_file
+    elif "medicalPrescriptionImage" in request.data and request.data["medicalPrescriptionImage"] == "null":
+        operation.medicalPrescriptionImage = None
+
+    treatment_record_image_file = request.FILES.get("treatmentRecordImage")
+    if treatment_record_image_file is not None:
+        operation.treatmentRecordImage = treatment_record_image_file
+    elif "treatmentRecordImage" in request.data and request.data["treatmentRecordImage"] == "null":
+        operation.treatmentRecordImage = None
+
+    organ_image_file = request.FILES.get("organImage")
+    if organ_image_file is not None:
+        operation.organImage = organ_image_file
+    elif "organImage" in request.data and request.data["organImage"] == "null":
+        operation.organImage = None
 
     operation.save()
     
@@ -354,8 +399,18 @@ def update_post_operation(request, id):
     post_operation.releaseDate = request.data.get("releaseDate", post_operation.releaseDate)
     post_operation.euthanized = request.data.get("euthanized", post_operation.euthanized)
     post_operation.comments = request.data.get("comments", post_operation.comments)
-    post_operation.popPictures = request.FILES.get("popPictures", post_operation.popPictures)
-    post_operation.releasePictures = request.FILES.get("releasePictures", post_operation.releasePictures)
+
+    pop_pictures_file = request.FILES.get("popPictures")
+    if pop_pictures_file is not None:
+        post_operation.popPictures = pop_pictures_file
+    elif "popPictures" in request.data and request.data["popPictures"] == "null":
+        post_operation.popPictures = None
+
+    release_pictures_image_file = request.FILES.get("releasePictures")
+    if release_pictures_image_file is not None:
+        post_operation.releasePictures = release_pictures_image_file
+    elif "releasePictures" in request.data and request.data["releasePictures"] == "null":
+        post_operation.releasePictures = None
 
     post_operation.save()
     
