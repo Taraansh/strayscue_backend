@@ -1,19 +1,16 @@
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.conf import settings
 from authorization.models import Profile
 
 
 class Sponsor(models.Model):
     SPONSOR_CHOICES = [
-        ('vaccination', 'Vaccination'),
-        ('sterilization', 'Sterilization'),
+        ('Vaccination', 'Vaccination'),
+        ('Sterilization', 'Sterilization'),
         ('OPD', 'OPD'),
         ('IPD', 'IPD'),
-        ('adoption', 'Adoption'),
-        ('post_op_care', 'Post Op Care'),
-        ('other', 'Other'),
+        ('Adoption', 'Adoption'),
+        ('Post Op Care', 'Post Op Care'),
+        ('Other', 'Other'),
     ]
 
     sponsor_name = models.CharField(max_length=255, null=False)
@@ -22,16 +19,8 @@ class Sponsor(models.Model):
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
     sponsor_logo = models.ImageField(upload_to='sponsor_logos/', null=True, blank=True)
-    sponsor_logo_url = models.URLField(blank=True, default='')
     sponsor_profile_creator = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='sponsors', null=True, blank=True)
 
 
     def __str__(self):
         return self.sponsor_name
-
-
-@receiver(post_save, sender=Sponsor)
-def update_image_url(sender, instance, created, **kwargs):
-    if created and instance.sponsor_logo:
-        instance.sponsor_logo_url = f"{settings.MEDIA_URL}{instance.sponsor_logo}"
-        instance.save()
