@@ -23,7 +23,8 @@ urlpatterns = [
     path('authorize/', include('authorization.urls')),
     path('sponsors/', include('sponsor_management.urls')),
     path('vets/', include('vet_management.urls')),
-    path('reporter/', include('reporter_management.urls')),
+    path('reporters/', include('reporter_management.urls')),
+    path('ngos/', include('ngo_management.urls')),
     path('cases/', include('case_management.urls')),
 ]
 

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'sponsor_management',
     'vet_management',
     'reporter_management',
+    'ngo_management',
     'case_management',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
