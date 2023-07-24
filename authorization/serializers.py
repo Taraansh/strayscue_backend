@@ -21,7 +21,6 @@ class ProfileSerializer(serializers.ModelSerializer):
             profile.password = hashed_password
             profile.save()
             return profile
-        
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -30,4 +29,5 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['username'] = user.username
         token['email'] = user.email
+        token['is_superuser'] = user.is_superuser
         return token
