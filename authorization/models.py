@@ -46,6 +46,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     email = models.CharField(max_length=50, unique=True, default='')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    profilePhoto = models.ImageField(upload_to='profile_photo/', null=True, blank=True)
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='groups',
