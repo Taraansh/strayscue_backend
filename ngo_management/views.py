@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from authorization.models import Profile
+from authorization.serializers import ProfileSerializer
 from ngo_management.models import Ngo
 from ngo_management.serializers import NgoSerializer
 
@@ -84,3 +85,16 @@ def update_ngo(request, id):
     serializer = NgoSerializer(ngo)
     print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+def get_all_ngo_linked_user(request, email):
+    try:
+        profile = Profile.objects.get(email=email)
+        ngo_id_linked = profile.ngo_linked_with_this_user.id
+        ngo = Ngo.objects.get(id=ngo_id_linked)
+        id_ngo = ngo.id
+        users_linked_with_ngo = Profile.objects.filter(ngo_linked_with_this_user=id_ngo)
+        serializer = ProfileSerializer(users_linked_with_ngo, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Profile.DoesNotExist:
+        return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)

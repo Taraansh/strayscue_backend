@@ -2,6 +2,7 @@ from django.db import models
 from authorization.models import Profile
 
 class Ngo(models.Model):
+    id = models.AutoField(primary_key=True)
     ngo_name = models.CharField(max_length=255, null=False)
     darpan_id = models.CharField(max_length=255, null=False)
     description = models.CharField(max_length=255, null=True, blank=True)
