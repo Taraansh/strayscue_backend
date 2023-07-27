@@ -43,13 +43,13 @@ class Case(models.Model):
 
 class ReportingDetail(models.Model):
     case_linked = models.OneToOneField(Case, on_delete=models.CASCADE)
-    reporterName = models.CharField(max_length=255, null=False)
-    reporterContact = models.CharField(max_length=255, null=False)
+    reporterName = models.CharField(max_length=255, blank=True, null=True)
+    reporterContact = models.CharField(max_length=255, blank=True, null=True)
     reporterAltContact = models.CharField(max_length=255, blank=True, null=True)
     reporterEmail = models.CharField(max_length=255, blank=True, null=True)
-    landmark = models.CharField(max_length=255, null=False)
-    location = models.CharField(max_length=255, null=False)
-    pincode = models.CharField(max_length=255, null=False)
+    landmark = models.CharField(max_length=255, blank=True, null=True)
+    location = models.CharField(max_length=255, blank=True, null=True)
+    pincode = models.CharField(max_length=255, blank=True, null=True)
     reportedDate = models.DateField(blank=True, null=True)
     reportedTime = models.TimeField(blank=True, null=True)
     pickupDate = models.DateField(blank=True, null=True)
@@ -116,7 +116,7 @@ class AnimalDetail(models.Model):
     animalPictures = models.ImageField(upload_to='animal_images/', null=True, blank=True)
 
     def __str__(self):
-        return self.animalSpecies + " - " + self.animalAge
+        return f"{self.animalSpecies} - {self.animalAge}"
 
 
 class MedicalDetail(models.Model):
@@ -189,7 +189,7 @@ class PostOperationDetail(models.Model):
     popStartDate = models.DateField(null=True, blank=True)
     popEndDate = models.DateField(null=True, blank=True)
     releaseDate = models.DateField(null=True, blank=True)
-    euthanized = models.CharField(max_length=3, choices=POP_EUTHANIZED_CHOICES, null=True, blank=True)
+    euthanized = models.CharField( choices=POP_EUTHANIZED_CHOICES, null=True, blank=True)
     comments = models.TextField(null=True, blank=True)
     popPictures = models.ImageField(upload_to='post_operation_detail/picture/', null=True, blank=True)
     releasePictures = models.ImageField(upload_to='post_operation_detail/release_picture/', null=True, blank=True)

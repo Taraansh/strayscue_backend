@@ -2,9 +2,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from authorization.models import Profile
-from authorization.serializers import ProfileSerializer
 from case_management.serializers import CaseSerializer, ReportingDetailSerializer, AnimalDetailSerializer, MedicalDetailSerializer, OperationDetailSerializer, PostOperationDetailSerializer
 from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail
+from ngo_management.models import Ngo
 
 
 @api_view(['GET'])
@@ -31,9 +31,64 @@ def create_case(request):
     serializer = CaseSerializer(data=case_data)
     if serializer.is_valid():
         serializer.save()
+        case_instance = serializer.instance
+        reporter_data = {
+            "case_linked": case_instance.case_id,
+            "reporterName": "",  # Provide the default or blank value here
+            "reporterContact": "",
+            "landmark": "",
+            "location": "",
+            "pincode": "",
+            # Add other fields of the ReportingDetail model with default or blank values
+        }
+        reporter_serializer = ReportingDetailSerializer(data=reporter_data)
+        if reporter_serializer.is_valid():
+            reporter_serializer.save()
+            # Verify that the reporter_serializer.data is printed in the console
+            # print(reporter_serializer.data)
+        else:
+            # Print serializer errors to debug any issues
+            print(reporter_serializer.errors)
+
+        # Create blank instances for other related models
+        animal_data = {"case_linked": case_instance.case_id}
+        animal_serializer = AnimalDetailSerializer(data=animal_data)
+        if animal_serializer.is_valid():
+            animal_serializer.save()
+            # print(animal_serializer.data)
+        else:
+            # Print serializer errors to debug any issues
+            print(animal_serializer.errors)
+
+        medical_data = {"case_linked": case_instance.case_id}
+        medical_serializer = MedicalDetailSerializer(data=medical_data)
+        if medical_serializer.is_valid():
+            medical_serializer.save()
+            # print(medical_serializer.data)
+        else:
+            # Print serializer errors to debug any issues
+            print(medical_serializer.errors)
+
+        operation_data = {"case_linked": case_instance.case_id}
+        operation_serializer = OperationDetailSerializer(data=operation_data)
+        if operation_serializer.is_valid():
+            operation_serializer.save()
+            # print(operation_serializer.data)
+        else:
+            # Print serializer errors to debug any issues
+            print(operation_serializer.errors)
+
+        post_operation_data = {"case_linked": case_instance.case_id}
+        post_operation_serializer = PostOperationDetailSerializer(data=post_operation_data)
+        if post_operation_serializer.is_valid():
+            post_operation_serializer.save()
+            # print(post_operation_serializer.data)
+        else:
+            # Print serializer errors to debug any issues
+            print(post_operation_serializer.errors)
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 @api_view(['PUT'])
@@ -53,7 +108,6 @@ def update_case(request, case_id):
     return Response(serializer.data, status=status.HTTP_200_OK)
     
 
-
 @api_view(['DELETE'])
 def delete_case(request, case_id):
     try:
@@ -65,171 +119,38 @@ def delete_case(request, case_id):
     return Response({"detail": "Case Deleted Sucessfully"},status=status.HTTP_204_NO_CONTENT)
 
 
+# @api_view(['GET'])
+# def get_cases_by_ngo(request, email):
+#     try:
+#         profile = Profile.objects.get(email=email)
+#         ngo_id_linked = profile.ngo_linked_with_this_user.id
+#         ngo = Ngo.objects.get(id=ngo_id_linked)
+#         id_ngo = ngo.id
+#         users_linked_with_ngo = Profile.objects.filter(ngo_linked_with_this_user=id_ngo)
 
-@api_view(['POST'])
-def create_case_reporter(request):
-    if request.method == 'POST':
-        case_id = request.data.get('case_linked')
-        try:
-            case= Case.objects.get(case_id=case_id)
-            case_id = case.case_id
-        except Case.DoesNotExist:
-            return Response({"error": "Case not found"}, status=status.HTTP_404_NOT_FOUND)
+#         cases_linked_with_users = Case.objects.filter(user_adding_this_case=users_linked_with_ngo )
+#         serializer = CaseSerializer(cases_linked_with_users, many=True)  # Serialize the filtered cases
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#     except Profile.DoesNotExist:
+#         return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Extract the data from the request
-        reporter_data = {
-            "case_linked": case_id,
-            "reporterName": request.data.get("reporterName"),
-            "reporterContact": request.data.get("reporterContact"),
-            "reporterAltContact": request.data.get("reporterAltContact"),
-            "reporterEmail": request.data.get("reporterEmail"),
-            "landmark": request.data.get("landmark"),
-            "location": request.data.get("location"),
-            "pincode": request.data.get("pincode"),
-            "reportedDate": request.data.get("reportedDate"),
-            "reportedTime": request.data.get("reportedTime"),
-            "pickupDate": request.data.get("pickupDate"),
-            "pickupTime": request.data.get("pickupTime"),
-            "frontImage": request.FILES.get('frontImage'),
-            "backImage": request.FILES.get('backImage'),
-            "consentFormImage": request.FILES.get('consentFormImage')
-        }
-        # Pass the data dictionary to the serializer
-        serializer = ReportingDetailSerializer(data=reporter_data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET'])
+def get_cases_by_ngo(request, email):
+    try:
+        profile = Profile.objects.get(email=email)
+        ngo = profile.ngo_linked_with_this_user  # Get the NGO associated with the user's profile
 
+        # Retrieve all users associated with the NGO
+        users_linked_with_ngo = Profile.objects.filter(ngo_linked_with_this_user=ngo)
 
-@api_view(['POST'])
-def create_case_animal(request):
-    if request.method == 'POST':
-        case_id = request.data.get('case_linked')
-        try:
-            case= Case.objects.get(case_id=case_id)
-            case_id = case.case_id
-        except Case.DoesNotExist:
-            return Response({"error": "Case not found"}, status=status.HTTP_404_NOT_FOUND)
+        # Retrieve all cases associated with the users from the previous step
+        cases_linked_with_users = Case.objects.filter(user_adding_this_case__in=users_linked_with_ngo)
 
-        # Extract the data from the request
-        animal_data = {
-            "case_linked": case_id,
-            "animalSpecies": request.data.get("animalSpecies"),
-            "animalBreed": request.data.get("animalBreed"),
-            "animalAge": request.data.get("animalAge"),
-            "animalTemperament": request.data.get("animalTemperament"),
-            "animalGender": request.data.get("animalGender"),
-            "animalPregnant": request.data.get("animalPregnant"),
-            "animalMarking": request.data.get("animalMarking"),
-            "animalColor": request.data.get("animalColor"),
-            "animalCatchable": request.data.get("animalCatchable"),
-            "animalWeight": request.data.get("animalWeight"),
-            "admissionReason": request.data.get("admissionReason"),
-            "animalPictures": request.FILES.get('animalPictures'),
-        }
+        serializer = CaseSerializer(cases_linked_with_users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Profile.DoesNotExist:
+        return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Pass the data dictionary to the serializer
-        serializer = AnimalDetailSerializer(data=animal_data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-def create_case_medical_details(request):
-    if request.method == 'POST':
-        case_id = request.data.get('case_linked')
-        try:
-            case= Case.objects.get(case_id=case_id)
-            case_id = case.case_id
-        except Case.DoesNotExist:
-            return Response({"error": "Case not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        # Extract the data from the request
-        medical_data = {
-            "case_linked": case_id,
-            "medicalHistory": request.data.get("medicalHistory"),
-            "vaccinationStatus": request.data.get("vaccinationStatus"),
-            "dewormed": request.data.get("dewormed"),
-            "fitForSurgery": request.data.get("fitForSurgery"),
-            "otherDetails": request.data.get("otherDetails"),
-            "admissionDate": request.data.get("admissionDate"),
-            "bloodReportImage": request.FILES.get('bloodReportImage'),
-            "feedingRecordImage": request.FILES.get('feedingRecordImage'),
-        }
-
-        # Pass the data dictionary to the serializer
-        serializer = MedicalDetailSerializer(data=medical_data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-def create_case_operation_details(request):
-    if request.method == 'POST':
-        case_id = request.data.get('case_linked')
-        try:
-            case= Case.objects.get(case_id=case_id)
-            case_id = case.case_id
-        except Case.DoesNotExist:
-            return Response({"error": "Case not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        # Extract the data from the request
-        operation_data = {
-            "case_linked": case_id,
-            "vetName": request.data.get("vetName"),
-            "operationDate": request.data.get("operationDate"),
-            "operationStartTime": request.data.get("operationStartTime"),
-            "operationEndTime": request.data.get("operationEndTime"),
-            "operationOutcome": request.data.get("operationOutcome"),
-            "medicalPrescriptionImage": request.FILES.get('medicalPrescriptionImage'),
-            "treatmentRecordImage": request.FILES.get('treatmentRecordImage'),
-            "organImage": request.FILES.get('organImage'),
-        }
-        
-        # Pass the data dictionary to the serializer
-        serializer = OperationDetailSerializer(data=operation_data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-def create_case_post_operation_details(request):
-    if request.method == 'POST':
-        case_id = request.data.get('case_linked')
-        try:
-            case= Case.objects.get(case_id=case_id)
-            case_id = case.case_id
-        except Case.DoesNotExist:
-            return Response({"error": "Case not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        # Extract the data from the request
-        post_operation_data = {
-            "case_linked": case_id,
-            "popComment": request.data.get("popComment"),
-            "popFacility": request.data.get("popFacility"),
-            "popExpectedDays": request.data.get("popExpectedDays"),
-            "popStartDate": request.data.get("popStartDate"),
-            "popEndDate": request.data.get("popEndDate"),
-            "releaseDate": request.data.get("releaseDate"),
-            "euthanized": request.data.get("euthanized"),
-            "comments": request.data.get("comments"),
-            "popPictures": request.FILES.get('popPictures'),
-            "releasePictures": request.FILES.get('releasePictures'),
-        }
-
-        # Pass the data dictionary to the serializer
-        serializer = PostOperationDetailSerializer(data=post_operation_data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['PUT'])
@@ -273,7 +194,7 @@ def update_reporter(request, id):
     reporter.save()
     # Pass the existing case object to the serializer for response
     serializer = ReportingDetailSerializer(reporter)
-    print(serializer.data)
+    # print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
