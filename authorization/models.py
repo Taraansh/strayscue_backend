@@ -40,12 +40,19 @@ class ProfileManager(BaseUserManager):
 
 
 class Profile(AbstractBaseUser, PermissionsMixin):
+    TYPE_OF_USER_IN_NGO = [
+            ('Founder', 'Founder'),
+            ('Manager', 'Manager'),
+            ('Worker', 'Worker'),
+        ]
     id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=50, unique=True)
     user_contact = models.CharField(max_length=20, unique=True)
     email = models.CharField(max_length=50, unique=True, default='')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    ngo_linked_with_this_user = models.ForeignKey("ngo_management.Ngo", on_delete=models.CASCADE, related_name='ngo', null=True, blank=True)
+    type_of_user_in_ngo = models.CharField(max_length=255, choices=TYPE_OF_USER_IN_NGO, null=True, blank=True)
     profilePhoto = models.ImageField(upload_to='profile_photo/', null=True, blank=True)
     groups = models.ManyToManyField(
         'auth.Group',

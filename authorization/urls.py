@@ -10,5 +10,8 @@ urlpatterns = [
 
     path('passchange/<str:email>/', views.password_change, name='change_password'),
     path('update/<str:email>/', views.update_profile, name="update_profile"),
+    path('modify/<int:id>/', views.update_profile_via_ngo_profile, name="update_profile_via_ngo_profile"),
     path('getprofile/<str:email>/', views.get_profile, name="get_profile" ),
+    path('signup/', views.signup, name='signup'),
+    path('deleteuser/<int:id>/', views.delete_profile, name='delete_profile'),
 ]

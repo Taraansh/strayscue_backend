@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,6 +9,7 @@ from authorization.serializers import MyTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
+from ngo_management.models import Ngo
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -65,6 +67,24 @@ def update_profile(request, email):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@api_view(["PUT"])
+def update_profile_via_ngo_profile(request, id):
+    try:
+        user = Profile.objects.get(id=id)
+    except Profile.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    user.username = request.data.get("username", user.username)
+    user.email = request.data.get("email", user.email)
+    user.user_contact = request.data.get("user_contact", user.user_contact)
+    user.type_of_user_in_ngo = request.data.get("type_of_user_in_ngo", user.type_of_user_in_ngo)
+    
+    user.save()
+    serializer = ProfileSerializer(user)
+    print(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 @api_view(["GET"])
 def get_profile(request, email):
     try:
@@ -74,6 +94,51 @@ def get_profile(request, email):
     
     serializer = ProfileSerializer(user)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+def signup(request):
+
+    email = request.data['email']
+    if Profile.objects.filter(email=email).exists():
+        return JsonResponse({'message': 'Email already exists'})
+
+    user_contact = request.data['user_contact']    
+    if Profile.objects.filter(user_contact=user_contact).exists():
+        return JsonResponse({'message': 'Contact already exists'})
+
+    username = request.data['username']
+    if Profile.objects.filter(username=username).exists():
+        return JsonResponse({'message': 'username already exists'})
+
+    ngo_id = request.data.get("ngo_linked_with_this_user")
+    ngo_instance = Ngo.objects.get(id = ngo_id)
+
+
+    if request.method == 'POST':
+        username = request.data.get('username')
+        user_contact = request.data.get('user_contact')
+        email = request.data.get('email')
+        password = request.data.get('password')
+        ngo_linked_with_this_user = ngo_instance
+        type_of_user_in_ngo = request.data.get('type_of_user_in_ngo')
+
+        # Create a new Profile instance
+        user_password_hashed = make_password(password)
+        user = Profile(username=username, user_contact=user_contact, email=email, password=user_password_hashed, ngo_linked_with_this_user=ngo_linked_with_this_user, type_of_user_in_ngo=type_of_user_in_ngo)
+        user.save()
+        serializer = ProfileSerializer(user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["DELETE"])
+def delete_profile(request, id):
+    try:
+        profile = Profile.objects.get(id=id)
+        profile.delete()
+        return Response({"message": "Profile deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    except Profile.DoesNotExist:
+        return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
