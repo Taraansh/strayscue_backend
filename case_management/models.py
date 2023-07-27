@@ -189,7 +189,7 @@ class PostOperationDetail(models.Model):
     popStartDate = models.DateField(null=True, blank=True)
     popEndDate = models.DateField(null=True, blank=True)
     releaseDate = models.DateField(null=True, blank=True)
-    euthanized = models.CharField( choices=POP_EUTHANIZED_CHOICES, null=True, blank=True)
+    euthanized = models.CharField(max_length=10, choices=POP_EUTHANIZED_CHOICES, null=True, blank=True)
     comments = models.TextField(null=True, blank=True)
     popPictures = models.ImageField(upload_to='post_operation_detail/picture/', null=True, blank=True)
     releasePictures = models.ImageField(upload_to='post_operation_detail/release_picture/', null=True, blank=True)
