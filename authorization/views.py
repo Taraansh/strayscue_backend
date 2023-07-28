@@ -78,6 +78,7 @@ def update_profile_via_ngo_profile(request, id):
     user.email = request.data.get("email", user.email)
     user.user_contact = request.data.get("user_contact", user.user_contact)
     user.type_of_user_in_ngo = request.data.get("type_of_user_in_ngo", user.type_of_user_in_ngo)
+    user.is_active = request.data.get("is_active", user.is_active)
     
     user.save()
     serializer = ProfileSerializer(user)
@@ -135,16 +136,6 @@ def signup(request):
         user.save()
         serializer = ProfileSerializer(user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-@api_view(["DELETE"])
-def delete_profile(request, id):
-    try:
-        profile = Profile.objects.get(id=id)
-        profile.delete()
-        return Response({"message": "Profile deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-    except Profile.DoesNotExist:
-        return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])

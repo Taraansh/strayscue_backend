@@ -13,5 +13,4 @@ urlpatterns = [
     path('modify/<int:id>/', views.update_profile_via_ngo_profile, name="update_profile_via_ngo_profile"),
     path('getprofile/<str:email>/', views.get_profile, name="get_profile" ),
     path('signup/', views.signup, name='signup'),
-    path('deleteuser/<int:id>/', views.delete_profile, name='delete_profile'),
 ]
