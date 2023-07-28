@@ -112,20 +112,26 @@ def signup(request):
         return JsonResponse({'message': 'username already exists'})
 
     ngo_id = request.data.get("ngo_linked_with_this_user")
-    ngo_instance = Ngo.objects.get(id = ngo_id)
-
+    ngo_instance = Ngo.objects.get(id=ngo_id)
 
     if request.method == 'POST':
         username = request.data.get('username')
         user_contact = request.data.get('user_contact')
         email = request.data.get('email')
         password = request.data.get('password')
-        ngo_linked_with_this_user = ngo_instance
+        ngo_linked_with_this_user = ngo_instance  # Assign the Ngo instance directly
         type_of_user_in_ngo = request.data.get('type_of_user_in_ngo')
 
         # Create a new Profile instance
         user_password_hashed = make_password(password)
-        user = Profile(username=username, user_contact=user_contact, email=email, password=user_password_hashed, ngo_linked_with_this_user=ngo_linked_with_this_user, type_of_user_in_ngo=type_of_user_in_ngo)
+        user = Profile(
+            username=username,
+            user_contact=user_contact,
+            email=email,
+            password=user_password_hashed,
+            ngo_linked_with_this_user=ngo_linked_with_this_user,
+            type_of_user_in_ngo=type_of_user_in_ngo
+        )
         user.save()
         serializer = ProfileSerializer(user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
