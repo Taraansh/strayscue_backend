@@ -7,9 +7,15 @@ class ReportingDetailSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class AnimalDetailSerializer(serializers.ModelSerializer):
+    # animalPictures = serializers.ListField(child=serializers.ImageField(), required=False)
     class Meta:
         model = AnimalDetail
         fields = "__all__"
+
+    # def validate_animalPictures(self, value):
+    #     # Here, you can implement any custom validation for the images if needed.
+    #     # For now, we'll simply return the value as it is.
+    #     return value
 
 class MedicalDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,7 +44,7 @@ class CaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Case
         # fields = "__all__"
-        fields = ('type_of_case', 'status_of_case', 'mortality_of_case', 'cause_of_failure', 'case_id', 'user_adding_this_case', 'user_name', 'reportingdetail', 'animaldetail', 'medicaldetail', 'operationdetail', 'postoperationdetail')
+        fields = ('type_of_case', 'status_of_case', 'mortality_of_case', 'cause_of_failure', 'case_id', 'user_adding_this_case', 'user_name', "date_when_created", "date_when_last_updated", 'reportingdetail', 'animaldetail', 'medicaldetail', 'operationdetail', 'postoperationdetail')
 
     def get_user_name(self, obj):
         return f"{obj.user_adding_this_case}"

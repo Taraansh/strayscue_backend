@@ -4,7 +4,8 @@ from rest_framework import status
 from authorization.models import Profile
 from case_management.serializers import CaseSerializer, ReportingDetailSerializer, AnimalDetailSerializer, MedicalDetailSerializer, OperationDetailSerializer, PostOperationDetailSerializer
 from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail
-from ngo_management.models import Ngo
+from django.conf import settings
+import os
 
 
 @api_view(['GET'])
@@ -34,11 +35,6 @@ def create_case(request):
         case_instance = serializer.instance
         reporter_data = {
             "case_linked": case_instance.case_id,
-            "reporterName": "",  # Provide the default or blank value here
-            "reporterContact": "",
-            "landmark": "",
-            "location": "",
-            "pincode": "",
             # Add other fields of the ReportingDetail model with default or blank values
         }
         reporter_serializer = ReportingDetailSerializer(data=reporter_data)
@@ -208,26 +204,24 @@ def update_animal(request, id):
     # Update the existing AnimalDetail object's fields based on the request data
     animal.animalSpecies = request.data.get("animalSpecies", animal.animalSpecies)
     animal.animalBreed = request.data.get("animalBreed", animal.animalBreed)
-    animal.animalAge = request.data.get("animalAge", animal.animalAge)
-    animal.animalTemperament = request.data.get("animalTemperament", animal.animalTemperament)
-    animal.animalGender = request.data.get("animalGender", animal.animalGender)
-    animal.animalPregnant = request.data.get("animalPregnant", animal.animalPregnant)
-    animal.animalMarking = request.data.get("animalMarking", animal.animalMarking)
-    animal.animalColor = request.data.get("animalColor", animal.animalColor)
-    animal.animalCatchable = request.data.get("animalCatchable", animal.animalCatchable)
-    animal.animalWeight = request.data.get("animalWeight", animal.animalWeight)
-    animal.admissionReason = request.data.get("admissionReason", animal.admissionReason)
+    # ... (update other fields)
 
-    animal_pictures_file = request.FILES.get("animalPictures")
-    if animal_pictures_file is not None:
-        animal.animalPictures = animal_pictures_file
+    animal_pictures_files = request.FILES.getlist("animalPictures")
+    if animal_pictures_files:
+        for image_file in animal_pictures_files:
+            # Use os.path.join to create the file path
+            file_path = os.path.join(settings.MEDIA_ROOT, 'animal_images', image_file.name)
+            with open(file_path, 'wb') as destination:
+                for chunk in image_file.chunks():
+                    destination.write(chunk)
     elif "animalPictures" in request.data and request.data["animalPictures"] == "null":
         animal.animalPictures = None
-
+    
     animal.save()
     
     # Pass the existing case object to the serializer for response
     serializer = AnimalDetailSerializer(animal)
+    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 

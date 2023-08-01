@@ -1,11 +1,6 @@
 from django.db import models
-from django.db.models.signals import post_save, pre_save
-from django.dispatch import receiver
 from authorization.models import Profile
-from strayscue_backend import settings
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-from django.utils.text import slugify
+from multiupload.fields import MultiFileField
 
 
 # Create your models here.
@@ -36,6 +31,8 @@ class Case(models.Model):
     mortality_of_case = models.CharField(max_length=255, choices=MORTALITY_OF_CASE, null=True)
     cause_of_failure = models.TextField(null=True, blank=True)
     case_id = models.AutoField(primary_key=True)
+    date_when_created = models.DateTimeField(auto_now_add=True)
+    date_when_last_updated = models.DateTimeField(auto_now=True)
     user_adding_this_case = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -113,7 +110,8 @@ class AnimalDetail(models.Model):
     animalCatchable = models.CharField(max_length=255, choices=ANIMAL_CATCHABLE_CHOICES, null=True, blank=True)
     animalWeight = models.CharField(max_length=255, null=True, blank=True)
     admissionReason = models.CharField(max_length=255, null=True, blank=True)
-    animalPictures = models.ImageField(upload_to='animal_images/', null=True, blank=True)
+    # animalPictures = models.ImageField(upload_to='animal_images/', null=True, blank=True)
+    animalPictures = MultiFileField()
 
     def __str__(self):
         return f"{self.animalSpecies} - {self.animalAge}"
