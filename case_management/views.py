@@ -2,10 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from authorization.models import Profile
-from case_management.serializers import CaseSerializer, ReportingDetailSerializer, AnimalDetailSerializer, MedicalDetailSerializer, OperationDetailSerializer, PostOperationDetailSerializer
-from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail
-from django.conf import settings
-import os
+from case_management.serializers import CaseSerializer, ReportingDetailSerializer, AnimalDetailSerializer, MedicalDetailSerializer, OperationDetailSerializer, PostOperationDetailSerializer, AnimalPicturesSerializer
+from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures
 
 
 @api_view(['GET'])
@@ -51,6 +49,12 @@ def create_case(request):
         animal_serializer = AnimalDetailSerializer(data=animal_data)
         if animal_serializer.is_valid():
             animal_serializer.save()
+            # animal_detail_instance = animal_serializer
+            # animal_picture_serializer = AnimalPicturesSerializer(animal_linked = animal_detail_instance)
+            # if animal_picture_serializer.is_valid():
+            #     animal_picture_serializer.save()
+            # else:
+            #     print(animal_picture_serializer.errors)
             # print(animal_serializer.data)
         else:
             # Print serializer errors to debug any issues
@@ -148,7 +152,6 @@ def get_cases_by_ngo(request, email):
         return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-
 @api_view(['PUT'])
 def update_reporter(request, id):
     try:
@@ -204,25 +207,53 @@ def update_animal(request, id):
     # Update the existing AnimalDetail object's fields based on the request data
     animal.animalSpecies = request.data.get("animalSpecies", animal.animalSpecies)
     animal.animalBreed = request.data.get("animalBreed", animal.animalBreed)
-    # ... (update other fields)
+    animal.animalAge = request.data.get("animalAge", animal.animalAge)
+    animal.animalTemperament = request.data.get("animalTemperament", animal.animalTemperament)
+    animal.animalGender = request.data.get("animalGender", animal.animalGender)
+    animal.animalPregnant = request.data.get("animalPregnant", animal.animalPregnant)
+    animal.animalMarking = request.data.get("animalMarking", animal.animalMarking)
+    animal.animalColor = request.data.get("animalColor", animal.animalColor)
+    animal.animalCatchable = request.data.get("animalCatchable", animal.animalCatchable)
+    animal.animalWeight = request.data.get("animalWeight", animal.animalWeight)
+    animal.admissionReason = request.data.get("admissionReason", animal.admissionReason)
+    # animal.animalPictures = request.FILES.getlist("animalPictures")
 
     animal_pictures_files = request.FILES.getlist("animalPictures")
     if animal_pictures_files:
         for image_file in animal_pictures_files:
             # Use os.path.join to create the file path
-            file_path = os.path.join(settings.MEDIA_ROOT, 'animal_images', image_file.name)
-            with open(file_path, 'wb') as destination:
-                for chunk in image_file.chunks():
-                    destination.write(chunk)
-    elif "animalPictures" in request.data and request.data["animalPictures"] == "null":
-        animal.animalPictures = None
+            AnimalPictures.objects.create(animal_linked=animal, animalPictures = image_file)
+    # elif "animalPictures" in request.data and request.data["animalPictures"] == "null":
+    #     animal.animalPictures = None
     
     animal.save()
+
+    #     animal_pictures_files = request.FILES.getlist("animalPictures")
+    # if animal_pictures_files:
+    #     for image_file in animal_pictures_files:
+    #         # Use os.path.join to create the file path
+    #         animalPictures = AnimalPictures.objects.create(animalPictures=image_file)
+    #         obj.files.add(animalPictures)
+    # elif "animalPictures" in request.data and request.data["animalPictures"] == "null":
+    #     animal.animalPictures = None
+    
+    # obj = animal.save()
     
     # Pass the existing case object to the serializer for response
     serializer = AnimalDetailSerializer(animal)
     print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+def delete_animal_picture(request, id):
+    try:
+        animal_picture = AnimalPictures.objects.get(id=id)
+    except AnimalPictures.DoesNotExist:
+        return Response({"error": "Animal Pictures not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    animal_picture.delete()
+    return Response({"detail": "Animal Pictures Deleted Sucessfully"},status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['PUT'])
