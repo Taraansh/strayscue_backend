@@ -1,7 +1,5 @@
 from django.db import models
 from authorization.models import Profile
-from multiupload.fields import MultiFileField
-
 
 # Create your models here.
 class Case(models.Model):
@@ -110,11 +108,19 @@ class AnimalDetail(models.Model):
     animalCatchable = models.CharField(max_length=255, choices=ANIMAL_CATCHABLE_CHOICES, null=True, blank=True)
     animalWeight = models.CharField(max_length=255, null=True, blank=True)
     admissionReason = models.CharField(max_length=255, null=True, blank=True)
-    # animalPictures = models.ImageField(upload_to='animal_images/', null=True, blank=True)
-    animalPictures = MultiFileField()
 
     def __str__(self):
         return f"{self.animalSpecies} - {self.animalAge}"
+
+class AnimalPictures(models.Model):
+    animal_linked = models.ForeignKey(AnimalDetail, on_delete=models.CASCADE, related_name="animalPictures")
+    animalPictures = models.ImageField(upload_to='animal_images/', null=True, blank=True)
+    animal_picture_upload_date = models.DateField(auto_now_add=True)
+
+
+    def __str__(self):
+        return f"{self.animal_linked.animalSpecies} - {self.animal_linked.animalAge}"
+    
 
 
 class MedicalDetail(models.Model):
