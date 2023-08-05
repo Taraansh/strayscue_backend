@@ -1,4 +1,4 @@
-from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail
+from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures
 from rest_framework import serializers
 
 class ReportingDetailSerializer(serializers.ModelSerializer):
@@ -6,16 +6,18 @@ class ReportingDetailSerializer(serializers.ModelSerializer):
         model = ReportingDetail
         fields = "__all__"
 
+class AnimalPicturesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnimalPictures
+        # fields = "__all__"
+        fields = ["id", "animal_linked", "animalPictures", "animal_picture_upload_date"]
+
 class AnimalDetailSerializer(serializers.ModelSerializer):
-    # animalPictures = serializers.ListField(child=serializers.ImageField(), required=False)
+    animalPictures = AnimalPicturesSerializer(many = True)
     class Meta:
         model = AnimalDetail
-        fields = "__all__"
-
-    # def validate_animalPictures(self, value):
-    #     # Here, you can implement any custom validation for the images if needed.
-    #     # For now, we'll simply return the value as it is.
-    #     return value
+        # fields = "__all__"
+        fields = ["id", "case_linked", "animalSpecies", "animalBreed", "animalAge", "animalTemperament", "animalGender", "animalPregnant", "animalMarking", "animalColor", "animalCatchable", "animalWeight", "admissionReason", "animalPictures"]
 
 class MedicalDetailSerializer(serializers.ModelSerializer):
     class Meta:
