@@ -36,6 +36,7 @@ class Case(models.Model):
     def __str__(self):
         return f"Case - ID: {self.case_id} - {self.type_of_case}"
 
+
 class ReportingDetail(models.Model):
     case_linked = models.OneToOneField(Case, on_delete=models.CASCADE)
     reporterName = models.CharField(max_length=255, blank=True, null=True)
@@ -117,11 +118,9 @@ class AnimalPictures(models.Model):
     animalPictures = models.ImageField(upload_to='animal_images/', null=True, blank=True)
     animal_picture_upload_date = models.DateField(auto_now_add=True)
 
-
     def __str__(self):
         return f"{self.animal_linked.animalSpecies} - {self.animal_linked.animalAge}"
     
-
 
 class MedicalDetail(models.Model):
     MEDICAL_STATUS_CHOICES = (
@@ -144,12 +143,18 @@ class MedicalDetail(models.Model):
     fitForSurgery = models.CharField(max_length=10, choices=FIT_FOR_SURGERY_CHOICES, null=True, blank=True)
     otherDetails = models.CharField(max_length=255, null=True, blank=True)
     admissionDate = models.DateField(null=True, blank=True)
-    feedingRecordImage = models.ImageField(upload_to='medical_detail/feeding_record/', null=True, blank=True)
     bloodReportImage = models.ImageField(upload_to='medical_detail/blood_repoort/', null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.vaccinationStatus} - {self.case_linked}"
+    
+class FeedingRecordImage(models.Model):
+    medical_linked = models.ForeignKey(MedicalDetail, on_delete=models.CASCADE, related_name="feedingRecordImage")
+    feedingRecordImage = models.ImageField(upload_to='medical_detail/feeding_record/', null=True, blank=True)
+    feeding_record_image_upload_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.vaccinationStatus} - {self.case_linked}" 
+        return f"{self.medical_linked.medicalHistory}"
 
 
 class OperationDetail(models.Model):
@@ -166,11 +171,25 @@ class OperationDetail(models.Model):
     operationEndTime = models.TimeField(null=True, blank=True)
     operationOutcome = models.CharField(max_length=20, choices=VET_OUTCOMES, null=True, blank=True)
     medicalPrescriptionImage = models.ImageField(upload_to='operational_detail/prescription/', null=True, blank=True)
-    treatmentRecordImage = models.ImageField(upload_to='operational_detail/treatment_record/', null=True, blank=True)
-    organImage = models.ImageField(upload_to='operational_detail/organ_image/', null=True, blank=True)
 
     def __str__(self):
         return f"OperationDetail - Case ID: {self.case_linked}"
+
+class TreatmentRecordImage(models.Model):
+    operation_linked = models.ForeignKey(OperationDetail, on_delete=models.CASCADE, related_name="treatmentRecordImage")
+    treatmentRecordImage = models.ImageField(upload_to='operational_detail/treatment_record/', null=True, blank=True)
+    treatment_record_image_upload_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.operation_linked.vetName}"
+
+class OrganImage(models.Model):
+    operation_linked = models.ForeignKey(OperationDetail, on_delete=models.CASCADE, related_name="organImage")
+    organImage = models.ImageField(upload_to='operational_detail/organ_image/', null=True, blank=True)
+    organ_image_upload_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.operation_linked.vetName}"
     
 
 class PostOperationDetail(models.Model):
@@ -195,9 +214,22 @@ class PostOperationDetail(models.Model):
     releaseDate = models.DateField(null=True, blank=True)
     euthanized = models.CharField(max_length=10, choices=POP_EUTHANIZED_CHOICES, null=True, blank=True)
     comments = models.TextField(null=True, blank=True)
-    popPictures = models.ImageField(upload_to='post_operation_detail/picture/', null=True, blank=True)
-    releasePictures = models.ImageField(upload_to='post_operation_detail/release_picture/', null=True, blank=True)
 
     def __str__(self):
         return f"PostOperationDetail - ID: {self.case_linked}"
     
+class PopPictures(models.Model):
+    post_operation_linked = models.ForeignKey(PostOperationDetail, on_delete=models.CASCADE, related_name="popPictures")
+    popPictures = models.ImageField(upload_to='post_operation_detail/picture/', null=True, blank=True)
+    pop_pictures_upload_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.post_operation_linked.popFacility}"
+    
+class ReleasePictures(models.Model):
+    post_operation_linked = models.ForeignKey(PostOperationDetail, on_delete=models.CASCADE, related_name="releasePictures")
+    releasePictures = models.ImageField(upload_to='post_operation_detail/release_picture/', null=True, blank=True)
+    release_pictures_upload_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.post_operation_linked.popFacility}"
