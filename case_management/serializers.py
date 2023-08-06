@@ -1,11 +1,14 @@
-from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures
+from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures, FeedingRecordImage, TreatmentRecordImage, OrganImage, PopPictures, ReleasePictures
 from rest_framework import serializers
 
+# Reporting Detail Serializer
 class ReportingDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReportingDetail
         fields = "__all__"
 
+# Animal Detail Serializer
+    # Animal Pictures Serializer
 class AnimalPicturesSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnimalPictures
@@ -19,21 +22,68 @@ class AnimalDetailSerializer(serializers.ModelSerializer):
         # fields = "__all__"
         fields = ["id", "case_linked", "animalSpecies", "animalBreed", "animalAge", "animalTemperament", "animalGender", "animalPregnant", "animalMarking", "animalColor", "animalCatchable", "animalWeight", "admissionReason", "animalPictures"]
 
+
+# Medical Detail Serializer
+    # Feeding Record Image Serializer
+class FeedingRecordImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FeedingRecordImage
+        # fields = "__all__"
+        fields = ["id", "medical_linked", "feedingRecordImage", "feeding_record_image_upload_date"]
+
 class MedicalDetailSerializer(serializers.ModelSerializer):
+    feedingRecordImage = FeedingRecordImageSerializer(many=True)
     class Meta:
         model = MedicalDetail
-        fields = "__all__"
+        # fields = "__all__"
+        fields = ["id", "case_linked", "medicalHistory", "vaccinationStatus", "dewormed", "fitForSurgery", "otherDetails", "admissionDate", "bloodReportImage", "feedingRecordImage"]
+
+# Operation Detail Serializer
+    # Treatment Record Image Serializer
+class TreatmentRecordImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TreatmentRecordImage
+        # fields = "__all__"
+        fields = ["id", "operation_linked", "treatmentRecordImage", "treatment_record_image_upload_date"]
+
+    # Organ Image Serializer
+class OrganImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrganImage
+        # fields = "__all__"
+        fields = ["id", "operation_linked", "organImage", "organ_image_upload_date"]
 
 class OperationDetailSerializer(serializers.ModelSerializer):
+    treatmentRecordImage = TreatmentRecordImageSerializer(many=True)
+    organImage = OrganImageSerializer(many=True)
     class Meta:
         model = OperationDetail
-        fields = "__all__"
+        # fields = "__all__"
+        fields = ["id", "case_linked", "vetName", "operationDate", "operationStartTime", "operationEndTime", "operationOutcome", "medicalPrescriptionImage", "treatmentRecordImage", "organImage"]
+
+# Post Operation Detail Serializer
+    # Post Operation Pictures Serializer
+class PopPicturesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PopPictures
+        # fields = "__all__"
+        fields = ["id", "post_operation_linked", "popPictures", "pop_pictures_upload_date"]
+
+    # Release Pictures Serializer
+class ReleasePicturesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReleasePictures
+        # fields = "__all__"
+        fields = ["id", "post_operation_linked", "releasePictures", "release_pictures_upload_date"]
 
 class PostOperationDetailSerializer(serializers.ModelSerializer):
+    popPictures = PopPicturesSerializer(many=True)
+    releasePictures = ReleasePicturesSerializer(many=True)
     class Meta:
         model = PostOperationDetail
-        fields = "__all__"
+        fields = ["id", "case_linked", "popComment", "popFacility", "popExpectedDays", "popStartDate", "popEndDate", "releaseDate", "euthanized", "comments", "popPictures", "releasePictures"]
 
+# Case Serializer
 class CaseSerializer(serializers.ModelSerializer):
     reportingdetail= ReportingDetailSerializer(read_only=True)
     animaldetail = AnimalDetailSerializer(read_only=True)
