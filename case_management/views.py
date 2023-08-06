@@ -2,8 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from authorization.models import Profile
-from case_management.serializers import CaseSerializer, ReportingDetailSerializer, AnimalDetailSerializer, MedicalDetailSerializer, OperationDetailSerializer, PostOperationDetailSerializer, AnimalPicturesSerializer
-from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures
+from case_management.serializers import CaseSerializer, ReportingDetailSerializer, AnimalDetailSerializer, MedicalDetailSerializer, OperationDetailSerializer, PostOperationDetailSerializer
+from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures, FeedingRecordImage, TreatmentRecordImage, OrganImage, PopPictures, ReleasePictures
 
 
 @api_view(['GET'])
@@ -119,21 +119,6 @@ def delete_case(request, case_id):
     return Response({"detail": "Case Deleted Sucessfully"},status=status.HTTP_204_NO_CONTENT)
 
 
-# @api_view(['GET'])
-# def get_cases_by_ngo(request, email):
-#     try:
-#         profile = Profile.objects.get(email=email)
-#         ngo_id_linked = profile.ngo_linked_with_this_user.id
-#         ngo = Ngo.objects.get(id=ngo_id_linked)
-#         id_ngo = ngo.id
-#         users_linked_with_ngo = Profile.objects.filter(ngo_linked_with_this_user=id_ngo)
-
-#         cases_linked_with_users = Case.objects.filter(user_adding_this_case=users_linked_with_ngo )
-#         serializer = CaseSerializer(cases_linked_with_users, many=True)  # Serialize the filtered cases
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-#     except Profile.DoesNotExist:
-#         return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
-
 @api_view(['GET'])
 def get_cases_by_ngo(request, email):
     try:
@@ -193,7 +178,7 @@ def update_reporter(request, id):
     reporter.save()
     # Pass the existing case object to the serializer for response
     serializer = ReportingDetailSerializer(reporter)
-    # print(serializer.data)
+    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -221,23 +206,9 @@ def update_animal(request, id):
     animal_pictures_files = request.FILES.getlist("animalPictures")
     if animal_pictures_files:
         for image_file in animal_pictures_files:
-            # Use os.path.join to create the file path
             AnimalPictures.objects.create(animal_linked=animal, animalPictures = image_file)
-    # elif "animalPictures" in request.data and request.data["animalPictures"] == "null":
-    #     animal.animalPictures = None
     
     animal.save()
-
-    #     animal_pictures_files = request.FILES.getlist("animalPictures")
-    # if animal_pictures_files:
-    #     for image_file in animal_pictures_files:
-    #         # Use os.path.join to create the file path
-    #         animalPictures = AnimalPictures.objects.create(animalPictures=image_file)
-    #         obj.files.add(animalPictures)
-    # elif "animalPictures" in request.data and request.data["animalPictures"] == "null":
-    #     animal.animalPictures = None
-    
-    # obj = animal.save()
     
     # Pass the existing case object to the serializer for response
     serializer = AnimalDetailSerializer(animal)
@@ -271,11 +242,10 @@ def update_medical(request, id):
     medical.otherDetails = request.data.get("otherDetails", medical.otherDetails)
     medical.admissionDate = request.data.get("admissionDate", medical.admissionDate)
 
-    feeding_record_image_file = request.FILES.get("feedingRecordImage")
-    if feeding_record_image_file is not None:
-        medical.feedingRecordImage = feeding_record_image_file
-    elif "feedingRecordImage" in request.data and request.data["feedingRecordImage"] == "null":
-        medical.feedingRecordImage = None
+    feeding_record_image_file = request.FILES.getlist("feedingRecordImage")
+    if feeding_record_image_file:
+        for image_file in feeding_record_image_file:
+            FeedingRecordImage.objects.create(medical_linked = medical, feedingRecordImage=image_file)
 
     blood_report_image_file = request.FILES.get("bloodReportImage")
     if blood_report_image_file is not None:
@@ -288,6 +258,17 @@ def update_medical(request, id):
     # Pass the existing case object to the serializer for response
     serializer = MedicalDetailSerializer(medical)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+def delete_feeding_record_image(request, id):
+    try:
+        feeding_record_image = FeedingRecordImage.objects.get(id=id)
+    except FeedingRecordImage.DoesNotExist:
+        return Response({"error": "Record not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    feeding_record_image.delete()
+    return Response({"detail": "Record Deleted Sucessfully"},status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['PUT'])
@@ -310,23 +291,41 @@ def update_operation(request, id):
     elif "medicalPrescriptionImage" in request.data and request.data["medicalPrescriptionImage"] == "null":
         operation.medicalPrescriptionImage = None
 
-    treatment_record_image_file = request.FILES.get("treatmentRecordImage")
-    if treatment_record_image_file is not None:
-        operation.treatmentRecordImage = treatment_record_image_file
-    elif "treatmentRecordImage" in request.data and request.data["treatmentRecordImage"] == "null":
-        operation.treatmentRecordImage = None
+    treatment_record_image_file = request.FILES.getlist("treatmentRecordImage")
+    if treatment_record_image_file:
+        for image_file in treatment_record_image_file:
+            TreatmentRecordImage.objects.create(operation_linked = operation, treatmentRecordImage=image_file)
 
-    organ_image_file = request.FILES.get("organImage")
-    if organ_image_file is not None:
-        operation.organImage = organ_image_file
-    elif "organImage" in request.data and request.data["organImage"] == "null":
-        operation.organImage = None
+    organ_image_file = request.FILES.getlist("organImage")
+    if organ_image_file:
+        for image_file in organ_image_file:
+            OrganImage.objects.create(operation_linked = operation, organImage=image_file)
 
     operation.save()
     
     # Pass the existing case object to the serializer for response
     serializer = OperationDetailSerializer(operation)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def delete_treatment_record_image(request, id):
+    try:
+        treatment_record_image = TreatmentRecordImage.objects.get(id=id)
+    except TreatmentRecordImage.DoesNotExist:
+        return Response({"error": "Record not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    treatment_record_image.delete()
+    return Response({"detail": "Record Deleted Sucessfully"},status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['DELETE'])
+def delete_organ_image(request, id):
+    try:
+        organ_image = OrganImage.objects.get(id=id)
+    except OrganImage.DoesNotExist:
+        return Response({"error": "Image not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    organ_image.delete()
+    return Response({"detail": "Image Deleted Sucessfully"},status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['PUT'])
@@ -346,20 +345,38 @@ def update_post_operation(request, id):
     post_operation.euthanized = request.data.get("euthanized", post_operation.euthanized)
     post_operation.comments = request.data.get("comments", post_operation.comments)
 
-    pop_pictures_file = request.FILES.get("popPictures")
-    if pop_pictures_file is not None:
-        post_operation.popPictures = pop_pictures_file
-    elif "popPictures" in request.data and request.data["popPictures"] == "null":
-        post_operation.popPictures = None
+    pop_pictures_file = request.FILES.getlist("popPictures")
+    if pop_pictures_file:
+        for image_file in pop_pictures_file:
+            PopPictures.objects.create(post_operation_linked = post_operation, popPictures=image_file)
 
-    release_pictures_image_file = request.FILES.get("releasePictures")
-    if release_pictures_image_file is not None:
-        post_operation.releasePictures = release_pictures_image_file
-    elif "releasePictures" in request.data and request.data["releasePictures"] == "null":
-        post_operation.releasePictures = None
+    release_pictures_file = request.FILES.getlist("releasePictures")
+    if release_pictures_file:
+        for image_file in release_pictures_file:
+            ReleasePictures.objects.create(post_operation_linked = post_operation, releasePictures=image_file)
 
     post_operation.save()
     
     # Pass the existing case object to the serializer for response
     serializer = PostOperationDetailSerializer(post_operation)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def delete_pop_pictures(request, id):
+    try:
+        pop_pictures = PopPictures.objects.get(id=id)
+    except PopPictures.DoesNotExist:
+        return Response({"error": "Image not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    pop_pictures.delete()
+    return Response({"detail": "Image Deleted Sucessfully"},status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['DELETE'])
+def delete_release_pictures(request, id):
+    try:
+        release_pictures = ReleasePictures.objects.get(id=id)
+    except ReleasePictures.DoesNotExist:
+        return Response({"error": "Image not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    release_pictures.delete()
+    return Response({"detail": "Image Deleted Sucessfully"},status=status.HTTP_204_NO_CONTENT)
