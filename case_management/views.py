@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from authorization.models import Profile
 from case_management.serializers import CaseSerializer, ReportingDetailSerializer, AnimalDetailSerializer, MedicalDetailSerializer, OperationDetailSerializer, PostOperationDetailSerializer
-from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures, FeedingRecordImage, TreatmentRecordImage, OrganImage, PopPictures, ReleasePictures
+from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures, FeedingRecordImage, BloodReportImage, TreatmentRecordImage, OrganImage, PopPictures, ReleasePictures
 
 
 @api_view(['GET'])
@@ -247,11 +247,11 @@ def update_medical(request, id):
         for image_file in feeding_record_image_file:
             FeedingRecordImage.objects.create(medical_linked = medical, feedingRecordImage=image_file)
 
-    blood_report_image_file = request.FILES.get("bloodReportImage")
-    if blood_report_image_file is not None:
-        medical.bloodReportImage = blood_report_image_file
-    elif "bloodReportImage" in request.data and request.data["bloodReportImage"] == "null":
-        medical.bloodReportImage = None
+    blood_report_date = request.data.get("bloodReportImageDate")
+    blood_report_image_file = request.FILES.getlist("bloodReportImage")
+    if blood_report_image_file:
+        for image_file in blood_report_image_file:
+            BloodReportImage.objects.create(medical_linked = medical, bloodReportImage=image_file, blood_report_date=blood_report_date)
 
     medical.save()
     
@@ -268,6 +268,17 @@ def delete_feeding_record_image(request, id):
         return Response({"error": "Record not found"}, status=status.HTTP_404_NOT_FOUND)
 
     feeding_record_image.delete()
+    return Response({"detail": "Record Deleted Sucessfully"},status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['DELETE'])
+def delete_blood_report_image(request, id):
+    try:
+        blood_report_image = BloodReportImage.objects.get(id=id)
+    except BloodReportImage.DoesNotExist:
+        return Response({"error": "Record not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    blood_report_image.delete()
     return Response({"detail": "Record Deleted Sucessfully"},status=status.HTTP_204_NO_CONTENT)
 
 
