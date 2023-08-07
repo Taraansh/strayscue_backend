@@ -17,6 +17,7 @@ urlpatterns = [
 
     path('deleteanimalpicture/<int:id>/', views.delete_animal_picture, name='delete_animal_picture'),
     path('deletefeedingrecord/<int:id>/', views.delete_feeding_record_image, name='delete_feeding_record_image'),
+    path('deletebloodrecord/<int:id>/', views.delete_blood_report_image, name='delete_blood_report_image'),
     path('deletetreatmentrecord/<int:id>/', views.delete_treatment_record_image, name='delete_treatment_record_image'),
     path('deleteorganimage/<int:id>/', views.delete_organ_image, name='delete_organ_image'),
     path('deletepostoperationpicture/<int:id>/', views.delete_pop_pictures, name='delete_pop_pictures'),
