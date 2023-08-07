@@ -1,4 +1,4 @@
-from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures, FeedingRecordImage, TreatmentRecordImage, OrganImage, PopPictures, ReleasePictures
+from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures, FeedingRecordImage, TreatmentRecordImage, OrganImage, PopPictures, ReleasePictures, BloodReportImage
 from rest_framework import serializers
 
 # Reporting Detail Serializer
@@ -24,6 +24,13 @@ class AnimalDetailSerializer(serializers.ModelSerializer):
 
 
 # Medical Detail Serializer
+    # Blood Report Image Serializer
+class BloodReportImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BloodReportImage
+        # fields = "__all__"
+        fields = ["id", "medical_linked", "bloodReportImage", "blood_report_date"]
+
     # Feeding Record Image Serializer
 class FeedingRecordImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,6 +40,7 @@ class FeedingRecordImageSerializer(serializers.ModelSerializer):
 
 class MedicalDetailSerializer(serializers.ModelSerializer):
     feedingRecordImage = FeedingRecordImageSerializer(many=True)
+    bloodReportImage = BloodReportImageSerializer(many=True)
     class Meta:
         model = MedicalDetail
         # fields = "__all__"
