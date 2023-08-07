@@ -143,10 +143,17 @@ class MedicalDetail(models.Model):
     fitForSurgery = models.CharField(max_length=10, choices=FIT_FOR_SURGERY_CHOICES, null=True, blank=True)
     otherDetails = models.CharField(max_length=255, null=True, blank=True)
     admissionDate = models.DateField(null=True, blank=True)
-    bloodReportImage = models.ImageField(upload_to='medical_detail/blood_repoort/', null=True, blank=True)
 
     def __str__(self):
         return f"{self.vaccinationStatus} - {self.case_linked}"
+
+class BloodReportImage(models.Model):
+    medical_linked = models.ForeignKey(MedicalDetail, on_delete=models.CASCADE, related_name="bloodReportImage")
+    bloodReportImage = models.ImageField(upload_to='medical_detail/blood_repoort/', null=True, blank=True)
+    blood_report_date = models.DateField(auto_now_add=False)
+
+    def __str__(self):
+        return f"{self.medical_linked.medicalHistory}"
     
 class FeedingRecordImage(models.Model):
     medical_linked = models.ForeignKey(MedicalDetail, on_delete=models.CASCADE, related_name="feedingRecordImage")
