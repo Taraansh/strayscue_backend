@@ -53,7 +53,7 @@ class Profile(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True)
     user_contact = models.CharField(max_length=20, unique=True)
     email = models.CharField(max_length=50, unique=True, default='')
-    is_active = models.CharField(max_length=15, choices=STATUS)
+    is_active = models.CharField(max_length=15, choices=STATUS, default="Active")
     is_staff = models.BooleanField(default=False)
     ngo_linked_with_this_user = models.ForeignKey("ngo_management.Ngo", on_delete=models.CASCADE, related_name='ngo', null=True, blank=True)
     type_of_user_in_ngo = models.CharField(max_length=255, choices=TYPE_OF_USER_IN_NGO, null=True, blank=True)
