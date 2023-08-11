@@ -177,10 +177,17 @@ class OperationDetail(models.Model):
     operationStartTime = models.TimeField(null=True, blank=True)
     operationEndTime = models.TimeField(null=True, blank=True)
     operationOutcome = models.CharField(max_length=20, choices=VET_OUTCOMES, null=True, blank=True)
-    medicalPrescriptionImage = models.ImageField(upload_to='operational_detail/prescription/', null=True, blank=True)
 
     def __str__(self):
         return f"OperationDetail - Case ID: {self.case_linked}"
+
+class MedicalPrescriptionImage(models.Model):
+    operation_linked = models.ForeignKey(OperationDetail, on_delete=models.CASCADE, related_name="medicalPrescriptionImage")
+    medicalPrescriptionImage = models.ImageField(upload_to='operational_detail/prescription/', null=True, blank=True)
+    medical_prescription_image_upload_date = models.DateField(auto_now_add=False)
+
+    def __str__(self):
+        return f"{self.operation_linked}"
 
 class TreatmentRecordImage(models.Model):
     operation_linked = models.ForeignKey(OperationDetail, on_delete=models.CASCADE, related_name="treatmentRecordImage")
@@ -188,7 +195,7 @@ class TreatmentRecordImage(models.Model):
     treatment_record_image_upload_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.operation_linked.vetName}"
+        return f"{self.operation_linked}"
 
 class OrganImage(models.Model):
     operation_linked = models.ForeignKey(OperationDetail, on_delete=models.CASCADE, related_name="organImage")
@@ -196,7 +203,7 @@ class OrganImage(models.Model):
     organ_image_upload_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.operation_linked.vetName}"
+        return f"{self.operation_linked}"
     
 
 class PostOperationDetail(models.Model):

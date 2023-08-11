@@ -1,5 +1,5 @@
 from django.contrib import admin
-from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures, FeedingRecordImage, BloodReportImage, TreatmentRecordImage, OrganImage, PopPictures, ReleasePictures
+from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures, FeedingRecordImage, BloodReportImage, TreatmentRecordImage, MedicalPrescriptionImage, OrganImage, PopPictures, ReleasePictures
 
 # Register your models here.
 admin.site.register(Case)
@@ -14,6 +14,7 @@ admin.site.register(FeedingRecordImage)
 admin.site.register(BloodReportImage)
 
 admin.site.register(OperationDetail)
+admin.site.register(MedicalPrescriptionImage)
 admin.site.register(TreatmentRecordImage)
 admin.site.register(OrganImage)
 
