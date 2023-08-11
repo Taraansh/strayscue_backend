@@ -249,7 +249,7 @@ def update_medical(request, id):
 
     blood_report_date = request.data.get("bloodReportImageDate")
     blood_report_image_file = request.FILES.getlist("bloodReportImage")
-    if blood_report_image_file:
+    if blood_report_image_file and blood_report_date:
         for image_file in blood_report_image_file:
             BloodReportImage.objects.create(medical_linked = medical, bloodReportImage=image_file, blood_report_date=blood_report_date)
     else:
@@ -301,7 +301,7 @@ def update_operation(request, id):
 
     medical_prescription_image_upload_date = request.data.get("medicalPrescriptionImageDate")
     medical_prescription_image_file = request.FILES.getlist("medicalPrescriptionImage")
-    if medical_prescription_image_file:
+    if medical_prescription_image_file and medical_prescription_image_upload_date:
         for image_file in medical_prescription_image_file:
             MedicalPrescriptionImage.objects.create(operation_linked = operation, medicalPrescriptionImage=image_file, medical_prescription_image_upload_date=medical_prescription_image_upload_date)
     else:

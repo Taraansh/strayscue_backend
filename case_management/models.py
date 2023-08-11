@@ -55,7 +55,7 @@ class ReportingDetail(models.Model):
     consentFormImage = models.ImageField(upload_to='sponsor_logos/consent_form/', null=True, blank=True)
 
     def __str__(self):
-        return self.reporterName
+        return f"ReportingDetail - Case ID: {self.case_linked}"
 
 
 class AnimalDetail(models.Model):
@@ -111,7 +111,7 @@ class AnimalDetail(models.Model):
     admissionReason = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.animalSpecies} - {self.animalAge}"
+        return f"AnimalDetail - Case ID: {self.case_linked}"
 
 class AnimalPictures(models.Model):
     animal_linked = models.ForeignKey(AnimalDetail, on_delete=models.CASCADE, related_name="animalPictures")
@@ -119,7 +119,7 @@ class AnimalPictures(models.Model):
     animal_picture_upload_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.animal_linked.animalSpecies} - {self.animal_linked.animalAge}"
+        return self.animal_linked
     
 
 class MedicalDetail(models.Model):
@@ -145,7 +145,7 @@ class MedicalDetail(models.Model):
     admissionDate = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.vaccinationStatus} - {self.case_linked}"
+        return f"MedicalDetail - Case ID: {self.case_linked}"
 
 class BloodReportImage(models.Model):
     medical_linked = models.ForeignKey(MedicalDetail, on_delete=models.CASCADE, related_name="bloodReportImage")
@@ -153,7 +153,7 @@ class BloodReportImage(models.Model):
     blood_report_date = models.DateField(auto_now_add=False)
 
     def __str__(self):
-        return f"{self.medical_linked.medicalHistory}"
+        return f"{self.medical_linked}"
     
 class FeedingRecordImage(models.Model):
     medical_linked = models.ForeignKey(MedicalDetail, on_delete=models.CASCADE, related_name="feedingRecordImage")
@@ -161,7 +161,7 @@ class FeedingRecordImage(models.Model):
     feeding_record_image_upload_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.medical_linked.medicalHistory}"
+        return f"{self.medical_linked}"
 
 
 class OperationDetail(models.Model):
@@ -238,7 +238,7 @@ class PopPictures(models.Model):
     pop_pictures_upload_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.post_operation_linked.popFacility}"
+        return f"{self.post_operation_linked}"
     
 class ReleasePictures(models.Model):
     post_operation_linked = models.ForeignKey(PostOperationDetail, on_delete=models.CASCADE, related_name="releasePictures")
@@ -246,4 +246,4 @@ class ReleasePictures(models.Model):
     release_pictures_upload_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.post_operation_linked.popFacility}"
+        return f"{self.post_operation_linked}"
