@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from authorization.models import Profile
-from case_management.serializers import CaseSerializer, ReportingDetailSerializer, AnimalDetailSerializer, MedicalDetailSerializer, OperationDetailSerializer, PostOperationDetailSerializer
+from case_management.serializers import CaseSerializer, ReportingDetailSerializer, AnimalDetailSerializer, MedicalDetailSerializer, OperationDetailSerializer, PostOperationDetailSerializer, BloodReportImageSerializer
 from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures, FeedingRecordImage, BloodReportImage, TreatmentRecordImage, OrganImage, PopPictures, ReleasePictures
 
 
@@ -252,6 +252,9 @@ def update_medical(request, id):
     if blood_report_image_file:
         for image_file in blood_report_image_file:
             BloodReportImage.objects.create(medical_linked = medical, bloodReportImage=image_file, blood_report_date=blood_report_date)
+    else:
+        if blood_report_date:
+            BloodReportImage.objects.create(medical_linked = medical, bloodReportImage=None, blood_report_date=blood_report_date)
 
     medical.save()
     
