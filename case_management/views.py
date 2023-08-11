@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from authorization.models import Profile
 from case_management.serializers import CaseSerializer, ReportingDetailSerializer, AnimalDetailSerializer, MedicalDetailSerializer, OperationDetailSerializer, PostOperationDetailSerializer, BloodReportImageSerializer
-from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures, FeedingRecordImage, BloodReportImage, TreatmentRecordImage, OrganImage, PopPictures, ReleasePictures
+from case_management.models import Case, ReportingDetail, AnimalDetail, MedicalDetail, OperationDetail, PostOperationDetail, AnimalPictures, FeedingRecordImage, BloodReportImage, TreatmentRecordImage, MedicalPrescriptionImage, OrganImage, PopPictures, ReleasePictures
 
 
 @api_view(['GET'])
@@ -299,11 +299,14 @@ def update_operation(request, id):
     operation.operationEndTime = request.data.get("operationEndTime", operation.operationEndTime)
     operation.operationOutcome = request.data.get("operationOutcome", operation.operationOutcome)
 
-    medical_prescription_image_file = request.FILES.get("medicalPrescriptionImage")
-    if medical_prescription_image_file is not None:
-        operation.medicalPrescriptionImage = medical_prescription_image_file
-    elif "medicalPrescriptionImage" in request.data and request.data["medicalPrescriptionImage"] == "null":
-        operation.medicalPrescriptionImage = None
+    medical_prescription_image_upload_date = request.data.get("medicalPrescriptionImageDate")
+    medical_prescription_image_file = request.FILES.getlist("medicalPrescriptionImage")
+    if medical_prescription_image_file:
+        for image_file in medical_prescription_image_file:
+            MedicalPrescriptionImage.objects.create(operation_linked = operation, medicalPrescriptionImage=image_file, medical_prescription_image_upload_date=medical_prescription_image_upload_date)
+    else:
+        if medical_prescription_image_upload_date:
+            MedicalPrescriptionImage.objects.create(operation_linked = operation, medicalPrescriptionImage=None, medical_prescription_image_upload_date=medical_prescription_image_upload_date)
 
     treatment_record_image_file = request.FILES.getlist("treatmentRecordImage")
     if treatment_record_image_file:
@@ -320,6 +323,16 @@ def update_operation(request, id):
     # Pass the existing case object to the serializer for response
     serializer = OperationDetailSerializer(operation)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def delete_medical_prescription_image(request, id):
+    try:
+        medical_prescription_image = MedicalPrescriptionImage.objects.get(id=id)
+    except MedicalPrescriptionImage.DoesNotExist:
+        return Response({"error": "Image not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    medical_prescription_image.delete()
+    return Response({"detail": "Image Deleted Sucessfully"},status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['DELETE'])
 def delete_treatment_record_image(request, id):
