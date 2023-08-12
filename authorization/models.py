@@ -45,10 +45,10 @@ class Profile(AbstractBaseUser, PermissionsMixin):
             ('Manager', 'Manager'),
             ('Worker', 'Worker'),
         ]
-    STATUS = {
+    STATUS = [
         ("Active", "Active"),
         ("Not Active", "Not Active"),
-    }
+    ]
     id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=50, unique=True)
     user_contact = models.CharField(max_length=20, unique=True)
