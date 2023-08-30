@@ -25,16 +25,14 @@ def create_case(request):
         "mortality_of_case": request.data.get("mortality_of_case"),
         "cause_of_failure": request.data.get("cause_of_failure"),
         "user_adding_this_case": request.data.get("user_adding_this_case"),
+        "ngo_linked_with_this_case": request.data.get("ngo_linked_with_this_case"),
     }
 
     serializer = CaseSerializer(data=case_data)
     if serializer.is_valid():
         serializer.save()
         case_instance = serializer.instance
-        reporter_data = {
-            "case_linked": case_instance.case_id,
-            # Add other fields of the ReportingDetail model with default or blank values
-        }
+        reporter_data = {"case_linked": case_instance.case_id}
         reporter_serializer = ReportingDetailSerializer(data=reporter_data)
         if reporter_serializer.is_valid():
             reporter_serializer.save()
@@ -49,12 +47,6 @@ def create_case(request):
         animal_serializer = AnimalDetailSerializer(data=animal_data)
         if animal_serializer.is_valid():
             animal_serializer.save()
-            # animal_detail_instance = animal_serializer
-            # animal_picture_serializer = AnimalPicturesSerializer(animal_linked = animal_detail_instance)
-            # if animal_picture_serializer.is_valid():
-            #     animal_picture_serializer.save()
-            # else:
-            #     print(animal_picture_serializer.errors)
             # print(animal_serializer.data)
         else:
             # Print serializer errors to debug any issues

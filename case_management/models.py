@@ -1,5 +1,6 @@
 from django.db import models
 from authorization.models import Profile
+from ngo_management.models import Ngo
 
 # Create your models here.
 class Case(models.Model):
@@ -29,6 +30,7 @@ class Case(models.Model):
     mortality_of_case = models.CharField(max_length=255, choices=MORTALITY_OF_CASE, null=True)
     cause_of_failure = models.TextField(null=True, blank=True)
     case_id = models.AutoField(primary_key=True)
+    ngo_linked_with_this_case = models.ForeignKey(Ngo, on_delete=models.CASCADE, related_name='cases', null=True, blank=True)
     date_when_created = models.DateTimeField(auto_now_add=True)
     date_when_last_updated = models.DateTimeField(auto_now=True)
     user_adding_this_case = models.ForeignKey(Profile, on_delete=models.CASCADE)
