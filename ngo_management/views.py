@@ -9,7 +9,7 @@ from ngo_management.serializers import NgoSerializer
 # Create your views here.
 
 @api_view(['GET'])
-def get_all_ngos(request, email):
+def get_all_ngos_using_email(request, email):
     try:
         profile = Profile.objects.get(email=email)
         ngo = Ngo.objects.filter(ngo_profile_creator=profile)
@@ -98,3 +98,10 @@ def get_all_ngo_linked_user(request, email):
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Profile.DoesNotExist:
         return Response({"error": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(["GET"])
+def get_all_ngos(request):
+    ngos = Ngo.objects.all()
+    serializer = NgoSerializer(ngos, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
