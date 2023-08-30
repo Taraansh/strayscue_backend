@@ -104,13 +104,13 @@ def signup(request):
     if Profile.objects.filter(email=email).exists():
         return JsonResponse({'message': 'Email already exists'})
 
-    user_contact = request.data['user_contact']    
-    if Profile.objects.filter(user_contact=user_contact).exists():
-        return JsonResponse({'message': 'Contact already exists'})
+    # user_contact = request.data['user_contact']    
+    # if Profile.objects.filter(user_contact=user_contact).exists():
+    #     return JsonResponse({'message': 'Contact already exists'})
 
-    username = request.data['username']
-    if Profile.objects.filter(username=username).exists():
-        return JsonResponse({'message': 'username already exists'})
+    # username = request.data['username']
+    # if Profile.objects.filter(username=username).exists():
+    #     return JsonResponse({'message': 'username already exists'})
 
     ngo_id = request.data.get("ngo_linked_with_this_user")
     ngo_instance = Ngo.objects.get(id=ngo_id)
@@ -129,6 +129,7 @@ def signup(request):
             username=username,
             user_contact=user_contact,
             email=email,
+            is_active="Active",
             password=user_password_hashed,
             ngo_linked_with_this_user=ngo_linked_with_this_user,
             type_of_user_in_ngo=type_of_user_in_ngo
@@ -136,6 +137,17 @@ def signup(request):
         user.save()
         serializer = ProfileSerializer(user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["GET"])
+def get_all_users(request):
+    try:
+        users = Profile.objects.all()
+    except Profile.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = ProfileSerializer(users, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
