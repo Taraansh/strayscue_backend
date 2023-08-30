@@ -50,8 +50,10 @@ class Profile(AbstractBaseUser, PermissionsMixin):
         ("Not Active", "Not Active"),
     ]
     id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=50, unique=True)
-    user_contact = models.CharField(max_length=20, unique=True)
+    username = models.CharField(max_length=50, unique=False)
+    user_contact = models.CharField(max_length=20, unique=False)
+    # username = models.CharField(max_length=50, unique=True)
+    # user_contact = models.CharField(max_length=20, unique=True)
     email = models.CharField(max_length=50, unique=True, default='')
     is_active = models.CharField(max_length=15, choices=STATUS)
     is_staff = models.BooleanField(default=False)
