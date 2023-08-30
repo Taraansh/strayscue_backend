@@ -16,7 +16,7 @@ class AnimalPicturesSerializer(serializers.ModelSerializer):
         fields = ["id", "animal_linked", "animalPictures", "animal_picture_upload_date"]
 
 class AnimalDetailSerializer(serializers.ModelSerializer):
-    animalPictures = AnimalPicturesSerializer(many = True)
+    animalPictures = AnimalPicturesSerializer(many = True, read_only=True)
     class Meta:
         model = AnimalDetail
         # fields = "__all__"
@@ -39,8 +39,8 @@ class FeedingRecordImageSerializer(serializers.ModelSerializer):
         fields = ["id", "medical_linked", "feedingRecordImage", "feeding_record_image_upload_date"]
 
 class MedicalDetailSerializer(serializers.ModelSerializer):
-    feedingRecordImage = FeedingRecordImageSerializer(many=True)
-    bloodReportImage = BloodReportImageSerializer(many=True)
+    feedingRecordImage = FeedingRecordImageSerializer(many=True, read_only=True)
+    bloodReportImage = BloodReportImageSerializer(many=True, read_only=True)
     class Meta:
         model = MedicalDetail
         # fields = "__all__"
@@ -69,9 +69,9 @@ class MedicalPrescriptionImageSerializer(serializers.ModelSerializer):
         fields = ["id", "operation_linked", "medicalPrescriptionImage", "medical_prescription_image_upload_date"]
 
 class OperationDetailSerializer(serializers.ModelSerializer):
-    medicalPrescriptionImage = MedicalPrescriptionImageSerializer(many=True)
-    treatmentRecordImage = TreatmentRecordImageSerializer(many=True)
-    organImage = OrganImageSerializer(many=True)
+    medicalPrescriptionImage = MedicalPrescriptionImageSerializer(many=True, read_only=True)
+    treatmentRecordImage = TreatmentRecordImageSerializer(many=True, read_only=True)
+    organImage = OrganImageSerializer(many=True, read_only=True)
     class Meta:
         model = OperationDetail
         # fields = "__all__"
@@ -93,8 +93,8 @@ class ReleasePicturesSerializer(serializers.ModelSerializer):
         fields = ["id", "post_operation_linked", "releasePictures", "release_pictures_upload_date"]
 
 class PostOperationDetailSerializer(serializers.ModelSerializer):
-    popPictures = PopPicturesSerializer(many=True)
-    releasePictures = ReleasePicturesSerializer(many=True)
+    popPictures = PopPicturesSerializer(many=True, read_only=True)
+    releasePictures = ReleasePicturesSerializer(many=True, read_only=True)
     class Meta:
         model = PostOperationDetail
         fields = ["id", "case_linked", "popComment", "popFacility", "popExpectedDays", "popStartDate", "popEndDate", "releaseDate", "euthanized", "comments", "popPictures", "releasePictures"]
@@ -112,7 +112,7 @@ class CaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Case
         # fields = "__all__"
-        fields = ('type_of_case', 'status_of_case', 'mortality_of_case', 'cause_of_failure', 'case_id', 'user_adding_this_case', 'user_name', "date_when_created", "date_when_last_updated", 'reportingdetail', 'animaldetail', 'medicaldetail', 'operationdetail', 'postoperationdetail')
+        fields = ['type_of_case', 'status_of_case', 'mortality_of_case', 'cause_of_failure', 'case_id', 'user_adding_this_case', 'user_name', "date_when_created", "date_when_last_updated", "ngo_linked_with_this_case", 'reportingdetail', 'animaldetail', 'medicaldetail', 'operationdetail', 'postoperationdetail']
 
     def get_user_name(self, obj):
         return f"{obj.user_adding_this_case}"
