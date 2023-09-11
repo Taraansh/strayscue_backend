@@ -63,7 +63,6 @@ def update_profile(request, email):
     
     user.save()
     serializer = ProfileSerializer(user)
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -82,7 +81,6 @@ def update_profile_via_ngo_profile(request, id):
     
     user.save()
     serializer = ProfileSerializer(user)
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 

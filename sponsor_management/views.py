@@ -67,5 +67,4 @@ def update_sponsor(request, id):
 
     sponsor.save()
     serializer = SponsorSerializer(sponsor)
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)

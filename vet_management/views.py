@@ -69,5 +69,4 @@ def update_vet(request, id):
 
     vet.save()
     serializer = VetSerializer(vet)
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)

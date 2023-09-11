@@ -170,7 +170,6 @@ def update_reporter(request, id):
     reporter.save()
     # Pass the existing case object to the serializer for response
     serializer = ReportingDetailSerializer(reporter)
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -204,7 +203,6 @@ def update_animal(request, id):
     
     # Pass the existing case object to the serializer for response
     serializer = AnimalDetailSerializer(animal)
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 

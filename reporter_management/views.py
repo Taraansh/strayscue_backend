@@ -67,5 +67,4 @@ def update_reporter(request, id):
 
     reporter.save()
     serializer = ReporterSerializer(reporter)
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)

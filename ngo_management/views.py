@@ -83,7 +83,6 @@ def update_ngo(request, id):
 
     ngo.save()
     serializer = NgoSerializer(ngo)
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(["GET"])
