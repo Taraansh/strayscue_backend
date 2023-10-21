@@ -6,7 +6,6 @@ from authorization.serializers import ProfileSerializer
 from ngo_management.models import Ngo
 from ngo_management.serializers import NgoSerializer
 
-# Create your views here.
 
 @api_view(['GET'])
 def get_all_ngos_using_email(request, email):
@@ -34,8 +33,10 @@ def add_ngo(request):
         'twitter_page': request.data.get('twitter_page'),
         'ngo_email': request.data.get('ngo_email'),
         'ngo_website': request.data.get('ngo_website'),
-        "ngo_logo" : request.FILES.get('ngo_logo'),
+        "ngo_logo": request.FILES.get('ngo_logo'),
         'ngo_profile_creator': request.data.get('ngo_profile_creator'),
+        'ngo_address': request.data.get('ngo_address'),
+        'offline_cases': request.data.get('offline_cases'),
     }
 
     serializer = NgoSerializer(data=ngo_data)
@@ -43,6 +44,7 @@ def add_ngo(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['DELETE'])
 def delete_ngo(request, id):
@@ -65,15 +67,20 @@ def update_ngo(request, id):
     ngo.ngo_name = request.data.get('ngo_name', ngo.ngo_name)
     ngo.darpan_id = request.data.get('darpan_id', ngo.darpan_id)
     ngo.description = request.data.get('description', ngo.description)
-    ngo.mission_statement = request.data.get('mission_statement', ngo.mission_statement)
-    ngo.helpline_number = request.data.get('helpline_number', ngo.helpline_number)
-    ngo.alternate_helpline_number = request.data.get('alternate_helpline_number', ngo.alternate_helpline_number)
+    ngo.mission_statement = request.data.get(
+        'mission_statement', ngo.mission_statement)
+    ngo.helpline_number = request.data.get(
+        'helpline_number', ngo.helpline_number)
+    ngo.alternate_helpline_number = request.data.get(
+        'alternate_helpline_number', ngo.alternate_helpline_number)
     ngo.facebook_page = request.data.get('facebook_page', ngo.facebook_page)
     ngo.linkedin_page = request.data.get('linkedin_page', ngo.linkedin_page)
     ngo.instagram_page = request.data.get('instagram_page', ngo.instagram_page)
     ngo.twitter_page = request.data.get('twitter_page', ngo.twitter_page)
     ngo.ngo_email = request.data.get('ngo_email', ngo.ngo_email)
     ngo.ngo_website = request.data.get('ngo_website', ngo.ngo_website)
+    ngo.ngo_address = request.data.get('ngo_address', ngo.ngo_address)
+    ngo.offline_cases = request.data.get('offline_cases', ngo.offline_cases)
 
     ngo_logo_file = request.FILES.get("ngo_logo")
     if ngo_logo_file is not None:
@@ -85,6 +92,7 @@ def update_ngo(request, id):
     serializer = NgoSerializer(ngo)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 @api_view(["GET"])
 def get_all_ngo_linked_user(request, email):
     try:
@@ -92,7 +100,8 @@ def get_all_ngo_linked_user(request, email):
         ngo_id_linked = profile.ngo_linked_with_this_user.id
         ngo = Ngo.objects.get(id=ngo_id_linked)
         id_ngo = ngo.id
-        users_linked_with_ngo = Profile.objects.filter(ngo_linked_with_this_user=id_ngo)
+        users_linked_with_ngo = Profile.objects.filter(
+            ngo_linked_with_this_user=id_ngo)
         serializer = ProfileSerializer(users_linked_with_ngo, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Profile.DoesNotExist:

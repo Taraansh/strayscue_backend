@@ -15,6 +15,8 @@ class Ngo(models.Model):
     twitter_page = models.CharField(max_length=255, null=True, blank=True)
     ngo_email = models.CharField(max_length=255, null=True, blank=True)
     ngo_website = models.CharField(max_length=255, null=True, blank=True)
+    ngo_address = models.CharField(max_length=255, null=True, blank=True, default='')
+    offline_cases = models.IntegerField(null=True, blank=True, default=0)
     ngo_logo = models.ImageField(upload_to='ngo/', null=True, blank=True)
     ngo_profile_creator = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='ngos', null=True, blank=True)
 
