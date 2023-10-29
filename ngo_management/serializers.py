@@ -8,11 +8,11 @@ class NgoSerializer(serializers.ModelSerializer):
     cases = serializers.SerializerMethodField()
 
     def get_cases(self, obj):
-        # Retrieve the first 20 cases for the NGO
-        first_20_cases = obj.cases.all()[:20]
+        # Retrieve the first 15 cases for the NGO
+        first_15_cases = obj.cases.all()[:15]
 
         # Serialize the cases using CaseSerializer
-        case_serializer = CaseSerializer(first_20_cases, many=True)
+        case_serializer = CaseSerializer(first_15_cases, many=True)
 
         return {
             'count': obj.cases.count(),  # Total count of cases
