@@ -46,6 +46,21 @@ def add_ngo(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
+def get_ngo(request, id):
+    try:
+        ngo = Ngo.objects.get(id=id)
+    except Ngo.DoesNotExist:
+        return Response({'status': 'error', 'message': 'Ngo not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = NgoSerializer(ngo)
+
+    if serializer:
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['DELETE'])
 def delete_ngo(request, id):
     try:
