@@ -127,7 +127,7 @@ def signup(request):
             username=username,
             user_contact=user_contact,
             email=email,
-            is_active="Active",
+            is_active=True,
             password=user_password_hashed,
             ngo_linked_with_this_user=ngo_linked_with_this_user,
             type_of_user_in_ngo=type_of_user_in_ngo
