@@ -8,6 +8,7 @@ class ProfileManager(BaseUserManager):
     def create_user(self, username, user_contact, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
+        extra_fields.setdefault('is_active', True)
 
         if not email:
             raise ValueError('The Email field must be set')
@@ -25,6 +26,7 @@ class ProfileManager(BaseUserManager):
     def create_superuser(self, username, user_contact, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
 
         if not email:
             raise ValueError('The Email field must be set')
@@ -45,17 +47,17 @@ class Profile(AbstractBaseUser, PermissionsMixin):
             ('Manager', 'Manager'),
             ('Worker', 'Worker'),
         ]
-    STATUS = [
-        ("Active", "Active"),
-        ("Not Active", "Not Active"),
-    ]
+    # STATUS = [
+    #     ("Active", "Active"),
+    #     ("Not Active", "Not Active"),
+    # ]
     id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=50, unique=False)
     user_contact = models.CharField(max_length=20, unique=False)
     # username = models.CharField(max_length=50, unique=True)
     # user_contact = models.CharField(max_length=20, unique=True)
     email = models.CharField(max_length=50, unique=True, default='')
-    is_active = models.CharField(max_length=15, choices=STATUS)
+    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     ngo_linked_with_this_user = models.ForeignKey("ngo_management.Ngo", on_delete=models.CASCADE, related_name='ngo', null=True, blank=True)
     type_of_user_in_ngo = models.CharField(max_length=255, choices=TYPE_OF_USER_IN_NGO, null=True, blank=True)
